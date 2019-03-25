@@ -70,9 +70,7 @@ class MainFragment : Fragment() {
         }
     }
 
-
-    private fun requestByLocation(lat: Double?, lon: Double?) {
-
+    private fun requestByLocation(lat: Double?, lon: Double?)
         RetrofitClient.getClient()
                 .create(WeatherService::class.java)
                 .getWeatherByLatLng(lat, lon, "3c75e1a077769372966bc6050f85b57a", "Imperial")
@@ -119,7 +117,6 @@ class MainFragment : Fragment() {
 
     }
 
-
     private fun findLocation(): Coord {
 
         locationManager = activity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
@@ -153,8 +150,6 @@ class MainFragment : Fragment() {
             }
         }
         return Coord(lon, lat)
-
-
     }
 
     fun showAlertDialogForPermissionDeniedWithCheck() {

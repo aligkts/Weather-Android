@@ -9,5 +9,13 @@
             android:id="@+id/mainFragment"
             android:name="com.aligkts.weatherapp.ui.fragment.MainFragment"
             android:label="fragment_main"
-            tools:layout="@layout/fragment_main" />
+            tools:layout="@layout/fragment_main" >
+        <action android:id="@+id/action_main_to_detail"
+                app:destination="@id/weatherDetailFragment"/>
+    </fragment>
+    <fragment
+        android:id="@+id/weatherDetailFragment"
+        android:name="com.aligkts.weatherapp.ui.fragment.WeatherDetailFragment"
+        android:label="fragment_weather_detail"
+        tools:layout="@layout/fragment_weather_detail" />
 </navigation>

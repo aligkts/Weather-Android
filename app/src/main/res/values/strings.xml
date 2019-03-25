@@ -4,4 +4,7 @@
 
     <string name="map_api_key">AIzaSyDN37Ds-_OZtzTT4G2OMT0EvdQUntqsi3k</string>
 
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>

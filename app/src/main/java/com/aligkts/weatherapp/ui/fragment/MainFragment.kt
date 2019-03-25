@@ -18,7 +18,11 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.navigation.Navigation
+import com.aligkts.weatherapp.R
 import com.aligkts.weatherapp.dto.byLocation.Coord
+import com.aligkts.weatherapp.enums.WeatherStatus
+import com.aligkts.weatherapp.helper.Singleton
 import com.aligkts.weatherapp.network.RetrofitClient
 import com.aligkts.weatherapp.network.WeatherService
 import com.aligkts.weatherapp.network.response.WeatherByLocationResponse
@@ -34,7 +38,6 @@ class MainFragment : Fragment() {
     private var permissions = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
     private var lat: Double? = 0.0
     private var lon: Double? = 0.0
-    private val weatherIconBaseUrl = "https://openweathermap.org/img/w/"
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
@@ -56,9 +59,15 @@ class MainFragment : Fragment() {
 
 
 
-
-
         return inflater.inflate(com.aligkts.weatherapp.R.layout.fragment_main, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        layoutCurrentTemp.setOnClickListener {
+            Navigation.findNavController(it).navigate(R.id.action_main_to_detail)
+        }
     }
 
 
@@ -77,7 +86,8 @@ class MainFragment : Fragment() {
                             call: Call<WeatherByLocationResponse>,
                             response: Response<WeatherByLocationResponse>
                     ) {
-                        Toast.makeText(activity, "response basarılı", Toast.LENGTH_SHORT).show()
+
+                        Singleton.instance?.setArrayList(response.body()!!)
 
                         val location = response.body()?.name
                         txtCurrentLocation.text = location
@@ -87,17 +97,25 @@ class MainFragment : Fragment() {
                         centi = Math.round(centi!!).toDouble()
                         txtCurrentTemp.text = centi.toString() + 0x00B0.toChar()
 
-                        val weatherIcon = weatherIconBaseUrl.plus(response.body()?.weather?.get(0)?.icon.toString())
-                        txtWind.text = response.body()?.wind.toString()
-                        txtPressure.text = response.body()?.main?.pressure.toString().plus(" hpa")
-                        txtHumidity.text = response.body()?.main?.humidity.toString().plus(" %")
-                        txtGeoCoord.text = response.body()?.coord.toString()
+                        val weatherStatus = response.body()?.weather?.get(0)?.main.toString()
+                        setWeatherIcon(weatherStatus)
 
                         weatherPanel.visibility = View.VISIBLE
                         progressLoading.visibility = View.GONE
                     }
 
                 })
+
+    }
+
+    private fun setWeatherIcon(weatherStatus: String) {
+        when (weatherStatus) {
+            WeatherStatus.Clear.toString() -> imgWeatherIcon.setImageResource(R.drawable.ic_clear)
+            WeatherStatus.Clouds.toString() -> imgWeatherIcon.setImageResource(R.drawable.ic_clouds)
+            WeatherStatus.Rain.toString() -> imgWeatherIcon.setImageResource(R.drawable.ic_rainy)
+            else -> imgWeatherIcon.setImageResource(R.drawable.ic_weather_other)
+
+        }
 
     }
 
@@ -169,7 +187,6 @@ class MainFragment : Fragment() {
                         !shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION)) {
 
                     showAlertDialogForPermissionDeniedWithCheck()
-
 
                     //Toast.makeText(activity!!,"İzin kalıcı olarak verilmedi lokasyon",Toast.LENGTH_SHORT).show()
                 } else {

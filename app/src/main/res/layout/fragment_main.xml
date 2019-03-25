@@ -27,11 +27,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="Kağıthane"
+            android:text="Konum"
             android:textColor="@android:color/black"
             android:textSize="36sp" />
 
         <LinearLayout
+            android:id="@+id/layoutCurrentTemp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
@@ -40,6 +41,7 @@
                 android:id="@+id/imgWeatherIcon"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
+                android:layout_margin="8dp"
                 android:src="@mipmap/ic_launcher" />
 
             <TextView
@@ -55,140 +57,19 @@
 
         </LinearLayout>
 
-        <TableLayout
-            android:layout_width="match_parent"
+
+
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabButton"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/border"
-            android:padding="16dp"
-            android:stretchColumns="*">
-
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/cell"
-                    android:text="Wind" />
-
-                <TextView
-                    android:id="@+id/txtWind"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_column="1"
-                    android:layout_marginLeft="8dp"
-                    android:text="Speed: 1 Deg: 1" />
+            android:layout_gravity="end|top"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="8dp"/>
 
 
-            </TableRow>
 
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/cell"
-                    android:text="Pressure" />
-
-                <TextView
-                    android:id="@+id/txtPressure"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_column="1"
-                    android:layout_marginLeft="8dp"
-                    android:text="1013.75 hpa" />
-
-
-            </TableRow>
-
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/cell"
-                    android:text="Humidity" />
-
-                <TextView
-                    android:id="@+id/txtHumidity"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_column="1"
-                    android:layout_marginLeft="8dp"
-                    android:text="100%" />
-
-
-            </TableRow>
-
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/cell"
-                    android:text="Geo coords" />
-
-                <TextView
-                    android:id="@+id/txtGeoCoord"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_column="1"
-                    android:layout_marginLeft="8dp"
-                    android:text="32.0,-81.0" />
-                <!-- <TableRow
-                     android:layout_width="wrap_content"
-                     android:layout_height="wrap_content">
-
-                     <TextView
-                         android:layout_width="wrap_content"
-                         android:layout_height="wrap_content"
-                         android:background="@drawable/cell"
-                         android:text="Sunrise" />
-
-                     <TextView
-                         android:id="@+id/txtSunrise"
-                         android:layout_width="wrap_content"
-                         android:layout_height="wrap_content"
-                         android:layout_column="1"
-                         android:layout_marginLeft="8dp"
-                         android:text="11:00" />
-                     </TableRow>
-
-                 <TableRow
-                     android:layout_width="wrap_content"
-                     android:layout_height="wrap_content">
-
-                     <TextView
-                         android:layout_width="wrap_content"
-                         android:layout_height="wrap_content"
-                         android:background="@drawable/cell"
-                         android:text="Sunset" />
-
-                     <TextView
-                         android:id="@+id/txtSunset"
-                         android:layout_width="wrap_content"
-                         android:layout_height="wrap_content"
-                         android:layout_column="1"
-                         android:layout_marginLeft="8dp"
-                         android:text="18:00" />
-
-
-                 </TableRow>
-     -->
-
-
-            </TableRow>
-
-
-        </TableLayout>
 
     </LinearLayout>
 

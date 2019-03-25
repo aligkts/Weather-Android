@@ -68,12 +68,17 @@ class MainFragment : Fragment() {
         layoutCurrentTemp.setOnClickListener {
             Navigation.findNavController(it).navigate(R.id.action_main_to_detail)
         }
+
+        fabButton.setOnClickListener {
+            Navigation.findNavController(it).navigate(R.id.action_main_to_add_location)
+        }
+
     }
 
-    private fun requestByLocation(lat: Double?, lon: Double?)
+    private fun requestByLocation(lat: Double?, lon: Double?) {
         RetrofitClient.getClient()
                 .create(WeatherService::class.java)
-                .getWeatherByLatLng(lat, lon, "3c75e1a077769372966bc6050f85b57a", "Imperial")
+                .getWeatherByLatLng(lat, lon, getString(R.string.weatherApiKey), "Imperial")
                 .enqueue(object : retrofit2.Callback<WeatherByLocationResponse> {
                     override fun onFailure(call: Call<WeatherByLocationResponse>, t: Throwable) {
                         Toast.makeText(activity, "response basarısız".plus(t), Toast.LENGTH_SHORT).show()

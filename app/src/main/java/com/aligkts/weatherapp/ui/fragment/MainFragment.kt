@@ -19,13 +19,16 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.aligkts.weatherapp.R
+import com.aligkts.weatherapp.database.DBHelper
 import com.aligkts.weatherapp.dto.byLocation.Coord
 import com.aligkts.weatherapp.enums.WeatherStatus
 import com.aligkts.weatherapp.helper.Singleton
 import com.aligkts.weatherapp.network.RetrofitClient
 import com.aligkts.weatherapp.network.WeatherService
 import com.aligkts.weatherapp.network.response.WeatherByLocationResponse
+import com.aligkts.weatherapp.ui.adapter.FavoritesAdapter
 import kotlinx.android.synthetic.main.fragment_main.*
 import retrofit2.Call
 import retrofit2.Response
@@ -33,20 +36,29 @@ import retrofit2.Response
 
 class MainFragment : Fragment() {
 
+
     private val LOCATION_REQUEST_CODE = 101
     lateinit var locationManager: LocationManager
-    private var permissions = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+    private var permissions =
+            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
     private var lat: Double? = 0.0
     private var lon: Double? = 0.0
+    private val db by lazy { DBHelper(activity!!.applicationContext) }
+    private val favoritesList by lazy { db.readFavoritesList() }
+    private var dataListFavorites = ArrayList<WeatherByLocationResponse>()
+    private var responseModel = WeatherByLocationResponse()
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
 
-        if (ContextCompat.checkSelfPermission(activity!!,
-                        Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                        activity!!,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                )
+                != PackageManager.PERMISSION_GRANTED
+        ) {
 
             requestPermissions(permissions, LOCATION_REQUEST_CODE)
         } else {
@@ -54,10 +66,14 @@ class MainFragment : Fragment() {
             lat = findLocation().lat
             lon = findLocation().lon
 
-            requestByLocation(lat, lon)
+            requestByCurrentLocation(lat, lon)
         }
 
-
+        if (favoritesList.size > 0) {
+            for (i in 0 until favoritesList.size) {
+                requestByLatLng(favoritesList[i].lat, favoritesList[i].lon)
+            }
+        }
 
         return inflater.inflate(com.aligkts.weatherapp.R.layout.fragment_main, container, false)
     }
@@ -73,15 +89,55 @@ class MainFragment : Fragment() {
             Navigation.findNavController(it).navigate(R.id.action_main_to_add_location)
         }
 
+
+
+
+        recyclerFavorites.apply {
+            layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
+            adapter = FavoritesAdapter(ArrayList())
+            (this.adapter as FavoritesAdapter).setNewList(dataListFavorites)
+        }
+
+
+
+
     }
 
-    private fun requestByLocation(lat: Double?, lon: Double?) {
+    private fun requestByLatLng(lat: Double?, lon: Double?) {
         RetrofitClient.getClient()
                 .create(WeatherService::class.java)
-                .getWeatherByLatLng(lat, lon, getString(R.string.weatherApiKey), "Imperial")
+                .getWeatherByLatLng(lat, lon, getString(R.string.weather_app_id), "Imperial")
                 .enqueue(object : retrofit2.Callback<WeatherByLocationResponse> {
                     override fun onFailure(call: Call<WeatherByLocationResponse>, t: Throwable) {
-                        Toast.makeText(activity, "response basarısız".plus(t), Toast.LENGTH_SHORT).show()
+                        Toast.makeText(activity, "Request basarısız".plus(t), Toast.LENGTH_SHORT).show()
+
+                    }
+
+                    override fun onResponse(
+                            call: Call<WeatherByLocationResponse>,
+                            response: Response<WeatherByLocationResponse>
+                    ) {
+
+                        responseModel = response.body() as WeatherByLocationResponse
+                        dataListFavorites.add(responseModel)
+                        Toast.makeText(activity, "Request basarılı", Toast.LENGTH_SHORT).show()
+
+
+                    }
+
+                })
+
+
+    }
+
+
+    private fun requestByCurrentLocation(lat: Double?, lon: Double?) {
+        RetrofitClient.getClient()
+                .create(WeatherService::class.java)
+                .getWeatherByLatLng(lat, lon, getString(R.string.weather_app_id), "Imperial")
+                .enqueue(object : retrofit2.Callback<WeatherByLocationResponse> {
+                    override fun onFailure(call: Call<WeatherByLocationResponse>, t: Throwable) {
+                        Toast.makeText(activity, "Request basarısız".plus(t), Toast.LENGTH_SHORT).show()
 
                     }
 
@@ -182,13 +238,13 @@ class MainFragment : Fragment() {
                     lat = findLocation().lat
                     lon = findLocation().lon
 
-                    requestByLocation(lat, lon)
+                    requestByCurrentLocation(lat, lon)
                 } else if (!shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) ||
-                        !shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                        !shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION)
+                ) {
 
                     showAlertDialogForPermissionDeniedWithCheck()
 
-                    //Toast.makeText(activity!!,"İzin kalıcı olarak verilmedi lokasyon",Toast.LENGTH_SHORT).show()
                 } else {
                     //Toast.makeText(activity!!,"İzin kalıcı olarak verilmedi lokasyon",Toast.LENGTH_SHORT).show()
                 }

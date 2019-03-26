@@ -13,7 +13,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.aligkts.weatherapp.R
 import com.aligkts.weatherapp.database.DBHelper
-import com.aligkts.weatherapp.dto.sqlite.FavoriteLocation
+import com.aligkts.weatherapp.dto.sqlite.FavoriteLocationEntity
 import com.aligkts.weatherapp.helper.Singleton
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
@@ -31,9 +31,12 @@ class AddLocationFragment : Fragment(), OnMapReadyCallback {
     private var currentLat: Double? = 0.0
     private var currentLng: Double? = 0.0
     private val db by lazy { DBHelper(activity!!.applicationContext) }
+    private val favoritesList by lazy { db.readFavoritesList() }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
+    ): View? {
 
 
         // Inflate the layout for this fragment
@@ -53,7 +56,6 @@ class AddLocationFragment : Fragment(), OnMapReadyCallback {
             mapView.getMapAsync(this)
         }
 
-
         btnFindPlace.setOnClickListener { geoLocate(view) }
 
     }
@@ -61,13 +63,23 @@ class AddLocationFragment : Fragment(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         mGoogleMap = googleMap
-        goToLocationZoom(currentLat!!, currentLng!!, 15F)
 
+        if (favoritesList.size > 0) {
+            for (i in 0 until favoritesList.size) {
+                addMarkerToMap(mGoogleMap, LatLng(favoritesList[i].lat, favoritesList[i].lon))
+            }
+        }
+
+        goToLocationZoom(currentLat!!, currentLng!!, 15F)
 
         mGoogleMap.setOnMapLongClickListener {
             goToLocationZoom(it.latitude, it.longitude, 15F)
-            if (db.insertData(FavoriteLocation(lat = it.latitude, lon = it.longitude))) {
-                mGoogleMap.addMarker(MarkerOptions().position(LatLng(it.latitude, it.longitude)))
+
+
+
+
+            if (db.insertData(FavoriteLocationEntity(lat = it.latitude, lon = it.longitude))) {
+                addMarkerToMap(mGoogleMap, LatLng(it.latitude, it.longitude))
             }
 
         }
@@ -98,15 +110,13 @@ class AddLocationFragment : Fragment(), OnMapReadyCallback {
         val lng = address.longitude
 
         goToLocationZoom(lat, lng, 15F)
-
-
-        /*val options = MarkerOptions()
-                .title(locality)
-                .position(LatLng(lat, lng))
-
-        mGoogleMap.addMarker(options).remove()*/
-
         view.hideKeyboard()
+
+    }
+
+    private fun addMarkerToMap(googleMap: GoogleMap, latLng: LatLng) {
+        val options = MarkerOptions().position(latLng)
+        googleMap.addMarker(options)
 
     }
 

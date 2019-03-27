@@ -12,6 +12,7 @@ import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -69,6 +70,8 @@ class MainFragment : Fragment() {
             requestByCurrentLocation(lat, lon)
         }
 
+        Log.i("Recycler", favoritesList.toString())
+
         if (favoritesList.size > 0) {
             for (i in 0 until favoritesList.size) {
                 requestByLatLng(favoritesList[i].lat, favoritesList[i].lon)
@@ -92,11 +95,7 @@ class MainFragment : Fragment() {
 
 
 
-        recyclerFavorites.apply {
-            layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
-            adapter = FavoritesAdapter(ArrayList())
-            (this.adapter as FavoritesAdapter).setNewList(dataListFavorites)
-        }
+
 
 
 
@@ -120,7 +119,13 @@ class MainFragment : Fragment() {
 
                         responseModel = response.body() as WeatherByLocationResponse
                         dataListFavorites.add(responseModel)
-                        Toast.makeText(activity, "Request basarılı", Toast.LENGTH_SHORT).show()
+                        Log.i("Recycler", dataListFavorites.toString())
+
+                        recyclerFavorites.apply {
+                            layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
+                            adapter = FavoritesAdapter(ArrayList())
+                            (this.adapter as FavoritesAdapter).setNewList(dataListFavorites)
+                        }
 
 
                     }

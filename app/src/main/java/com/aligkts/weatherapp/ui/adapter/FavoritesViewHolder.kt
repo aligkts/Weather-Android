@@ -1,6 +1,7 @@
 package com.aligkts.weatherapp.ui.adapter
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.LinearLayout
@@ -25,6 +26,9 @@ class FavoritesViewHolder(viewGroup: ViewGroup) :
 
 
     fun bindTo(context: Context, model: WeatherByLocationResponse) {
+
+        Log.i("Recycler", model.toString())
+
         txtItemTitle.text = model.name
         val temp = model.main?.temp
         var centi = (temp?.toInt()?.minus(32))?.div(1.8000)

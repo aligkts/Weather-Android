@@ -81,7 +81,7 @@ class AddLocationFragment : Fragment(), OnMapReadyCallback {
                     .setPositiveButton("Evet") { dialog, which ->
                         if (db.insertData(FavoriteLocationEntity(lat = it.latitude, lon = it.longitude))) {
                             addMarkerToMap(mGoogleMap, LatLng(it.latitude, it.longitude))
-                            goToLocationZoom(it.latitude, it.longitude, 15F)
+                            //goToLocationZoom(it.latitude, it.longitude, 15F)
                         }
                     }.show()
 

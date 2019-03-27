@@ -7,6 +7,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.aligkts.weatherapp.R
+import com.aligkts.weatherapp.database.DBHelper
 import com.aligkts.weatherapp.enums.WeatherStatus
 import com.aligkts.weatherapp.network.response.WeatherByLocationResponse
 
@@ -24,7 +25,7 @@ class FavoritesViewHolder(viewGroup: ViewGroup) :
     private val itemPanel by lazy { itemView.findViewById<LinearLayout>(R.id.itemPanel) }
 
 
-    fun bindTo(context: Context, model: WeatherByLocationResponse) {
+    fun bindTo(context: Context, model: WeatherByLocationResponse,pos: Int) {
 
 
         txtItemTitle.text = model.name
@@ -34,6 +35,10 @@ class FavoritesViewHolder(viewGroup: ViewGroup) :
         txtItemTemp.text = centi.toString() + 0x00B0.toChar()
 
         setWeatherIcon(model.weather!![0]!!.main.toString())
+
+       /* itemPanel.setOnClickListener {
+            DBHelper(context).deleteClickedItem(pos.plus(1))
+        }*/
 
 
     }

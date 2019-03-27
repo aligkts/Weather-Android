@@ -22,7 +22,7 @@ class FavoritesAdapter(var itemList: List<WeatherByLocationResponse>) : Recycler
 
 
     override fun onBindViewHolder(holder: FavoritesViewHolder, position: Int) {
-        holder.bindTo(holder.itemView.context, searchedListFiltered[position])
+        holder.bindTo(holder.itemView.context, searchedListFiltered[position],position)
     }
 
     fun setNewList(itemList: List<WeatherByLocationResponse>) {

@@ -60,4 +60,13 @@ class DBHelper(val context: Context) : SQLiteOpenHelper(context, DBHelper.DATABA
         return locationList as ArrayList<FavoriteLocationEntity>
     }
 
+
+    fun deleteClickedItem(position: Int)  {
+        val sqliteDB = this.writableDatabase
+        val query = "DELETE FROM $TABLE_NAME WHERE id=$position"
+        sqliteDB.execSQL(query)
+        sqliteDB.close()
+
+    }
+
 }

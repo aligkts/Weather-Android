@@ -34,12 +34,14 @@ class DBHelper(val context: Context) : SQLiteOpenHelper(context, DBHelper.DATABA
 
         val result = sqliteDB.insert(TABLE_NAME, null, contentValues)
         //Toast.makeText(context, if (result != -1L) "Kayıt Başarılı"  else "Kayıt yapılamadı.", Toast.LENGTH_SHORT).show()
+
+
         return result != -1L
 
     }
 
 
-    fun readFavoritesList(): MutableList<FavoriteLocationEntity> {
+    fun readFavoritesList(): ArrayList<FavoriteLocationEntity> {
         val locationList = mutableListOf<FavoriteLocationEntity>()
         val sqliteDB = this.readableDatabase
         val query = "SELECT * FROM $TABLE_NAME"
@@ -55,7 +57,7 @@ class DBHelper(val context: Context) : SQLiteOpenHelper(context, DBHelper.DATABA
         }
         result.close()
         sqliteDB.close()
-        return locationList
+        return locationList as ArrayList<FavoriteLocationEntity>
     }
 
 }

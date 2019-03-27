@@ -1,6 +1,7 @@
 package com.aligkts.weatherapp.ui.fragment
 
 
+import android.app.AlertDialog
 import android.content.Context
 import android.location.Address
 import android.location.Geocoder
@@ -73,17 +74,19 @@ class AddLocationFragment : Fragment(), OnMapReadyCallback {
         goToLocationZoom(currentLat!!, currentLng!!, 15F)
 
         mGoogleMap.setOnMapLongClickListener {
-            goToLocationZoom(it.latitude, it.longitude, 15F)
 
+            val alertDialog = AlertDialog.Builder(activity)
+                    .setMessage("Bu lokasyonu eklemek istediğinize emin misiniz?")
+                    .setNegativeButton("Hayır") { dialog, which -> dialog.dismiss() }
+                    .setPositiveButton("Evet") { dialog, which ->
+                        if (db.insertData(FavoriteLocationEntity(lat = it.latitude, lon = it.longitude))) {
+                            addMarkerToMap(mGoogleMap, LatLng(it.latitude, it.longitude))
+                            goToLocationZoom(it.latitude, it.longitude, 15F)
+                        }
+                    }.show()
 
-
-
-            if (db.insertData(FavoriteLocationEntity(lat = it.latitude, lon = it.longitude))) {
-                addMarkerToMap(mGoogleMap, LatLng(it.latitude, it.longitude))
-            }
 
         }
-
 
     }
 
@@ -118,8 +121,8 @@ class AddLocationFragment : Fragment(), OnMapReadyCallback {
         val options = MarkerOptions().position(latLng)
         googleMap.addMarker(options)
 
-    }
 
+    }
 
     private fun googleServicesAvailable(): Boolean {
         val api = GoogleApiAvailability.getInstance()

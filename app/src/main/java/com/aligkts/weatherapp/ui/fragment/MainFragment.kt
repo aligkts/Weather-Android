@@ -12,7 +12,6 @@ import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,6 +23,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.aligkts.weatherapp.R
 import com.aligkts.weatherapp.database.DBHelper
 import com.aligkts.weatherapp.dto.byLocation.Coord
+import com.aligkts.weatherapp.dto.sqlite.FavoriteLocationEntity
 import com.aligkts.weatherapp.enums.WeatherStatus
 import com.aligkts.weatherapp.helper.Singleton
 import com.aligkts.weatherapp.network.RetrofitClient
@@ -45,15 +45,18 @@ class MainFragment : Fragment() {
     private var lat: Double? = 0.0
     private var lon: Double? = 0.0
     private val db by lazy { DBHelper(activity!!.applicationContext) }
-    private val favoritesList by lazy { db.readFavoritesList() }
+    private var favoritesList = ArrayList<FavoriteLocationEntity>()
     private var dataListFavorites = ArrayList<WeatherByLocationResponse>()
     private var responseModel = WeatherByLocationResponse()
+    private var mAdapter = FavoritesAdapter(ArrayList())
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
 
+        dataListFavorites.clear()
+        favoritesList = db.readFavoritesList()
         if (ContextCompat.checkSelfPermission(
                         activity!!,
                         Manifest.permission.ACCESS_FINE_LOCATION
@@ -70,7 +73,6 @@ class MainFragment : Fragment() {
             requestByCurrentLocation(lat, lon)
         }
 
-        Log.i("Recycler", favoritesList.toString())
 
         if (favoritesList.size > 0) {
             for (i in 0 until favoritesList.size) {
@@ -92,13 +94,20 @@ class MainFragment : Fragment() {
             Navigation.findNavController(it).navigate(R.id.action_main_to_add_location)
         }
 
+        searchView.setOnSearchClickListener {
+            searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    mAdapter.filter.filter(query)
+                    return false
+                }
 
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    mAdapter.filter.filter(newText)
+                    return false
+                }
 
-
-
-
-
-
+            })
+        }
 
     }
 
@@ -109,30 +118,22 @@ class MainFragment : Fragment() {
                 .enqueue(object : retrofit2.Callback<WeatherByLocationResponse> {
                     override fun onFailure(call: Call<WeatherByLocationResponse>, t: Throwable) {
                         Toast.makeText(activity, "Request basarısız".plus(t), Toast.LENGTH_SHORT).show()
-
                     }
 
                     override fun onResponse(
                             call: Call<WeatherByLocationResponse>,
                             response: Response<WeatherByLocationResponse>
                     ) {
-
                         responseModel = response.body() as WeatherByLocationResponse
                         dataListFavorites.add(responseModel)
-                        Log.i("Recycler", dataListFavorites.toString())
 
                         recyclerFavorites.apply {
                             layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
-                            adapter = FavoritesAdapter(ArrayList())
+                            adapter = mAdapter
                             (this.adapter as FavoritesAdapter).setNewList(dataListFavorites)
                         }
-
-
                     }
-
                 })
-
-
     }
 
 

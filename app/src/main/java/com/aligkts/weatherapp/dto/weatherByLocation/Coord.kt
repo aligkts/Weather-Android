@@ -1,4 +1,4 @@
-package com.aligkts.weatherapp.dto.byLocation
+package com.aligkts.weatherapp.dto.weatherByLocation
 
 import com.google.gson.annotations.SerializedName
 

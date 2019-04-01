@@ -14,8 +14,10 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.aligkts.weatherapp.R
 import com.aligkts.weatherapp.database.DBHelper
-import com.aligkts.weatherapp.dto.sqlite.FavoriteLocationEntity
 import com.aligkts.weatherapp.helper.Singleton
+import com.aligkts.weatherapp.network.RetrofitClient
+import com.aligkts.weatherapp.network.WeatherService
+import com.aligkts.weatherapp.network.response.WeatherByLocationResponse
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -24,6 +26,8 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.android.synthetic.main.fragment_add_location.*
+import retrofit2.Call
+import retrofit2.Response
 
 
 class AddLocationFragment : Fragment(), OnMapReadyCallback {
@@ -33,7 +37,7 @@ class AddLocationFragment : Fragment(), OnMapReadyCallback {
     private var currentLng: Double? = 0.0
     private val db by lazy { DBHelper(activity!!.applicationContext) }
     private val favoritesList by lazy { db.readFavoritesList() }
-
+    private var currentList = WeatherByLocationResponse()
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?
@@ -47,9 +51,9 @@ class AddLocationFragment : Fragment(), OnMapReadyCallback {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val list = Singleton.instance?.getArrayList()
-        currentLat = list?.coord?.lat
-        currentLng = list?.coord?.lon
+        currentList = Singleton.instance?.getCurrentList()!!
+        currentLat = currentList.coord?.lat
+        currentLng = currentList.coord?.lon
 
         if (googleServicesAvailable()) {
             mapView.onCreate(savedInstanceState)
@@ -67,7 +71,7 @@ class AddLocationFragment : Fragment(), OnMapReadyCallback {
 
         if (favoritesList.size > 0) {
             for (i in 0 until favoritesList.size) {
-                addMarkerToMap(mGoogleMap, LatLng(favoritesList[i].lat, favoritesList[i].lon))
+                addMarkerToMap(mGoogleMap, favoritesList[i].lat, favoritesList[i].lon)
             }
         }
 
@@ -79,16 +83,37 @@ class AddLocationFragment : Fragment(), OnMapReadyCallback {
                     .setMessage("Bu lokasyonu eklemek istediğinize emin misiniz?")
                     .setNegativeButton("Hayır") { dialog, which -> dialog.dismiss() }
                     .setPositiveButton("Evet") { dialog, which ->
-                        if (db.insertData(FavoriteLocationEntity(lat = it.latitude, lon = it.longitude))) {
-                            addMarkerToMap(mGoogleMap, LatLng(it.latitude, it.longitude))
-                            //goToLocationZoom(it.latitude, it.longitude, 15F)
-                        }
+
+                        RetrofitClient.getClient()
+                                .create(WeatherService::class.java)
+                                .getWeatherByLatLng(it.latitude, it.longitude, getString(R.string.weather_app_id), "Imperial")
+                                .enqueue(object : retrofit2.Callback<WeatherByLocationResponse> {
+                                    override fun onFailure(call: Call<WeatherByLocationResponse>, t: Throwable) {
+                                        Toast.makeText(activity, "Request basarısız".plus(t), Toast.LENGTH_SHORT).show()
+                                    }
+
+                                    override fun onResponse(
+                                            call: Call<WeatherByLocationResponse>,
+                                            response: Response<WeatherByLocationResponse>
+                                    ) {
+
+                                        if (db.insertData(response.body()!!)) {
+                                            addMarkerToMap(mGoogleMap, response.body()!!.coord?.lat!!, response.body()!!.coord?.lon!!)
+                                        }
+
+                                    }
+                                })
+
+
+
+
                     }.show()
 
 
         }
 
     }
+
 
     private fun goToLocation(lat: Double, lng: Double) {
         val ll = LatLng(lat, lng)
@@ -117,8 +142,8 @@ class AddLocationFragment : Fragment(), OnMapReadyCallback {
 
     }
 
-    private fun addMarkerToMap(googleMap: GoogleMap, latLng: LatLng) {
-        val options = MarkerOptions().position(latLng)
+    private fun addMarkerToMap(googleMap: GoogleMap, lat: Double, lon: Double) {
+        val options = MarkerOptions().position(LatLng(lat, lon))
         googleMap.addMarker(options)
 
 

@@ -5,6 +5,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import com.aligkts.weatherapp.dto.sqlite.FavoriteLocationEntity
+import com.aligkts.weatherapp.network.response.WeatherByLocationResponse
 
 class DBHelper(val context: Context) : SQLiteOpenHelper(context, DBHelper.DATABASE_NAME, null, DBHelper.DATABASE_VERSION) {
     private val TABLE_NAME = "Favorites"
@@ -18,7 +19,7 @@ class DBHelper(val context: Context) : SQLiteOpenHelper(context, DBHelper.DATABA
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
-        val createTable = "CREATE TABLE $TABLE_NAME ($COL_ID INTEGER PRIMARY KEY AUTOINCREMENT, $COL_LAT  VARCHAR(100),$COL_LON  VARCHAR(100))"
+        val createTable = "CREATE TABLE $TABLE_NAME ($COL_ID INTEGER, $COL_LAT  VARCHAR(100),$COL_LON  VARCHAR(100))"
         db?.execSQL(createTable)
     }
 
@@ -26,18 +27,17 @@ class DBHelper(val context: Context) : SQLiteOpenHelper(context, DBHelper.DATABA
     }
 
 
-    fun insertData(favoriteLocationEntity: FavoriteLocationEntity): Boolean {
+    fun insertData(model: WeatherByLocationResponse): Boolean {
         val sqliteDB = this.writableDatabase
         val contentValues = ContentValues()
-        contentValues.put(COL_LAT, favoriteLocationEntity.lat)
-        contentValues.put(COL_LON, favoriteLocationEntity.lon)
+        contentValues.put(COL_ID, model.id)
+        contentValues.put(COL_LAT, model.coord?.lat)
+        contentValues.put(COL_LON, model.coord?.lon)
 
         val result = sqliteDB.insert(TABLE_NAME, null, contentValues)
         //Toast.makeText(context, if (result != -1L) "Kayıt Başarılı"  else "Kayıt yapılamadı.", Toast.LENGTH_SHORT).show()
 
-
         return result != -1L
-
     }
 
 
@@ -61,7 +61,7 @@ class DBHelper(val context: Context) : SQLiteOpenHelper(context, DBHelper.DATABA
     }
 
 
-    fun deleteClickedItem(position: Int)  {
+    fun deleteClickedItem(position: Int) {
         val sqliteDB = this.writableDatabase
         val query = "DELETE FROM $TABLE_NAME WHERE id=$position"
         sqliteDB.execSQL(query)

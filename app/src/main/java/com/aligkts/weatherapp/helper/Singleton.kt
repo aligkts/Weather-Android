@@ -20,11 +20,23 @@ class Singleton private constructor() {
             }
     }
 
-    fun setArrayList(list : WeatherByLocationResponse){
+    fun setCurrentList(list: WeatherByLocationResponse) {
         this.dataList = list
     }
 
-    fun getArrayList(): WeatherByLocationResponse {
+    fun getCurrentList(): WeatherByLocationResponse {
+
+        return this.dataList
+    }
+
+    fun setOtherList(list: WeatherByLocationResponse?) {
+        if (dataList != null) {
+            this.dataList = list!!
+
+        }
+    }
+
+    fun getOtherList(): WeatherByLocationResponse {
 
         return this.dataList
     }

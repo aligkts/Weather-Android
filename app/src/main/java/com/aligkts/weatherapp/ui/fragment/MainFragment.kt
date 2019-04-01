@@ -22,9 +22,10 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.aligkts.weatherapp.R
 import com.aligkts.weatherapp.database.DBHelper
-import com.aligkts.weatherapp.dto.byLocation.Coord
 import com.aligkts.weatherapp.dto.sqlite.FavoriteLocationEntity
+import com.aligkts.weatherapp.dto.weatherByLocation.Coord
 import com.aligkts.weatherapp.enums.WeatherStatus
+import com.aligkts.weatherapp.helper.INotifyRecycler
 import com.aligkts.weatherapp.helper.Singleton
 import com.aligkts.weatherapp.network.RetrofitClient
 import com.aligkts.weatherapp.network.WeatherService
@@ -35,7 +36,7 @@ import retrofit2.Call
 import retrofit2.Response
 
 
-class MainFragment : Fragment() {
+class MainFragment : Fragment(), INotifyRecycler {
 
 
     private val LOCATION_REQUEST_CODE = 101
@@ -45,18 +46,18 @@ class MainFragment : Fragment() {
     private var lat: Double? = 0.0
     private var lon: Double? = 0.0
     private val db by lazy { DBHelper(activity!!.applicationContext) }
-    private var favoritesList = ArrayList<FavoriteLocationEntity>()
-    private var dataListFavorites = ArrayList<WeatherByLocationResponse>()
+    private var favoritesListFromDb = ArrayList<FavoriteLocationEntity>()
+    private var dataListFavoritesFromRequest = ArrayList<WeatherByLocationResponse>()
     private var responseModel = WeatherByLocationResponse()
-    private var mAdapter = FavoritesAdapter(ArrayList())
+    private var mAdapter = FavoritesAdapter(ArrayList(), this)
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
 
-        dataListFavorites.clear()
-        favoritesList = db.readFavoritesList()
+        dataListFavoritesFromRequest.clear()
+        favoritesListFromDb = db.readFavoritesList()
         if (ContextCompat.checkSelfPermission(
                         activity!!,
                         Manifest.permission.ACCESS_FINE_LOCATION
@@ -74,20 +75,23 @@ class MainFragment : Fragment() {
         }
 
 
-        if (favoritesList.size > 0) {
-            for (i in 0 until favoritesList.size) {
-                requestByLatLng(favoritesList[i].lat, favoritesList[i].lon)
+        if (favoritesListFromDb.size > 0) {
+            for (i in 0 until favoritesListFromDb.size) {
+                requestByLatLng(favoritesListFromDb[i].lat, favoritesListFromDb[i].lon)
             }
         }
 
         return inflater.inflate(com.aligkts.weatherapp.R.layout.fragment_main, container, false)
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         layoutCurrentTemp.setOnClickListener {
-            Navigation.findNavController(it).navigate(R.id.action_main_to_detail)
+            val bundle = Bundle()
+            bundle.putString("bundle", "current_clicked")
+            Navigation.findNavController(it).navigate(R.id.action_main_to_detail, bundle)
         }
 
         fabButton.setOnClickListener {
@@ -124,14 +128,12 @@ class MainFragment : Fragment() {
                             call: Call<WeatherByLocationResponse>,
                             response: Response<WeatherByLocationResponse>
                     ) {
-                        responseModel = response.body() as WeatherByLocationResponse
-                        dataListFavorites.add(responseModel)
 
-                        recyclerFavorites.apply {
-                            layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
-                            adapter = mAdapter
-                            (this.adapter as FavoritesAdapter).setNewList(dataListFavorites)
-                        }
+                        responseModel = response.body() as WeatherByLocationResponse
+                        dataListFavoritesFromRequest.add(responseModel)
+
+                        setRecyclerAdapter(dataListFavoritesFromRequest)
+
                     }
                 })
     }
@@ -152,7 +154,7 @@ class MainFragment : Fragment() {
                             response: Response<WeatherByLocationResponse>
                     ) {
 
-                        Singleton.instance?.setArrayList(response.body()!!)
+                        Singleton.instance?.setCurrentList(response.body()!!)
 
                         val location = response.body()?.name
                         txtCurrentLocation.text = location
@@ -183,6 +185,22 @@ class MainFragment : Fragment() {
         }
 
     }
+
+    private fun setRecyclerAdapter(list: ArrayList<WeatherByLocationResponse>) {
+        recyclerFavorites.apply {
+            layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
+            adapter = mAdapter
+            (this.adapter as FavoritesAdapter).setNewList(list)
+        }
+    }
+
+    override fun refreshRecycler(i: Int) {
+        dataListFavoritesFromRequest.removeAt(i)
+        mAdapter.notifyDataSetChanged()
+
+        Toast.makeText(activity, "interface clicked", Toast.LENGTH_SHORT).show()
+    }
+
 
     private fun findLocation(): Coord {
 
@@ -232,6 +250,7 @@ class MainFragment : Fragment() {
                 }
                 .setCancelable(false).create().show()
     }
+
 
     override fun onRequestPermissionsResult(
             requestCode: Int,

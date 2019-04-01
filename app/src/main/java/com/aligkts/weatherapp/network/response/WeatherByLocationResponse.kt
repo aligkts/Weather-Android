@@ -1,6 +1,6 @@
 package com.aligkts.weatherapp.network.response
 
-import com.aligkts.weatherapp.dto.byLocation.*
+import com.aligkts.weatherapp.dto.weatherByLocation.*
 import com.google.gson.annotations.SerializedName
 
 data class WeatherByLocationResponse(

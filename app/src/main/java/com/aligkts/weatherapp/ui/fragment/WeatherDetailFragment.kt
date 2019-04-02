@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.aligkts.weatherapp.R
 import com.aligkts.weatherapp.dto.forecastByLocation.ListItem
 import com.aligkts.weatherapp.enums.WeatherStatus
@@ -107,7 +108,7 @@ class WeatherDetailFragment : Fragment() {
 
     private fun setRecyclerAdapter(list: ArrayList<ListItem>) {
         recyclerDetail.apply {
-            layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
+            layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
             adapter = mAdapter
             (this.adapter as DetailAdapter).setNewList(list)
         }

@@ -15,12 +15,9 @@ interface WeatherService {
             @Query("units") units: String
     ): Call<WeatherByLocationResponse>
 
-    /*
-    @Path("lat") lat: Double,
-    @Path("lon") lon: Double*/
-
 
     @GET("data/2.5/weather?q={city name}")
     fun getWeatherByCityName()
+
 
 }

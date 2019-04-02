@@ -6,9 +6,11 @@ import android.content.Context
 import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -24,6 +26,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.android.synthetic.main.fragment_add_location.*
 import retrofit2.Call
@@ -61,6 +64,22 @@ class AddLocationFragment : Fragment(), OnMapReadyCallback {
             mapView.getMapAsync(this)
         }
 
+        edtPlace.setOnKeyListener(object : View.OnKeyListener {
+            override fun onKey(v: View?, keyCode: Int, event: KeyEvent): Boolean {
+                if (keyCode == EditorInfo.IME_ACTION_SEARCH ||
+                        keyCode == EditorInfo.IME_ACTION_DONE ||
+                        event.action == KeyEvent.ACTION_DOWN &&
+                        event.keyCode == KeyEvent.KEYCODE_ENTER) {
+
+                    geoLocate(view)
+
+
+                }
+                return false
+            }
+
+        })
+
         btnFindPlace.setOnClickListener { geoLocate(view) }
 
     }
@@ -79,47 +98,40 @@ class AddLocationFragment : Fragment(), OnMapReadyCallback {
 
         mGoogleMap.setOnMapLongClickListener {
 
-            val alertDialog = AlertDialog.Builder(activity)
-                    .setMessage("Bu lokasyonu eklemek istediğinize emin misiniz?")
-                    .setNegativeButton("Hayır") { dialog, which -> dialog.dismiss() }
-                    .setPositiveButton("Evet") { dialog, which ->
+            RetrofitClient.getClient()
+                    .create(WeatherService::class.java)
+                    .getWeatherByLatLng(it.latitude, it.longitude, getString(R.string.weather_app_id), "Imperial")
+                    .enqueue(object : retrofit2.Callback<WeatherByLocationResponse> {
+                        override fun onFailure(call: Call<WeatherByLocationResponse>, t: Throwable) {
+                            Toast.makeText(activity, "Request basarısız".plus(t), Toast.LENGTH_SHORT).show()
+                        }
 
-                        RetrofitClient.getClient()
-                                .create(WeatherService::class.java)
-                                .getWeatherByLatLng(it.latitude, it.longitude, getString(R.string.weather_app_id), "Imperial")
-                                .enqueue(object : retrofit2.Callback<WeatherByLocationResponse> {
-                                    override fun onFailure(call: Call<WeatherByLocationResponse>, t: Throwable) {
-                                        Toast.makeText(activity, "Request basarısız".plus(t), Toast.LENGTH_SHORT).show()
+                        override fun onResponse(
+                                call: Call<WeatherByLocationResponse>,
+                                response: Response<WeatherByLocationResponse>
+                        ) {
+
+                            val marker = addMarkerToMap(mGoogleMap, response.body()!!.coord?.lat!!, response.body()!!.coord?.lon!!)
+
+
+                            val alertDialog = AlertDialog.Builder(activity)
+                                    .setMessage("Bu lokasyonu eklemek istediğinize emin misiniz?")
+                                    .setNegativeButton("Hayır") { dialog, which ->
+                                        marker?.remove()
+                                        dialog.dismiss()
                                     }
+                                    .setPositiveButton("Evet") { dialog, which ->
+                                        db.insertData(response.body()!!)
 
-                                    override fun onResponse(
-                                            call: Call<WeatherByLocationResponse>,
-                                            response: Response<WeatherByLocationResponse>
-                                    ) {
+                                    }.show()
 
-                                        if (db.insertData(response.body()!!)) {
-                                            addMarkerToMap(mGoogleMap, response.body()!!.coord?.lat!!, response.body()!!.coord?.lon!!)
-                                        }
-
-                                    }
-                                })
-
-
-
-
-                    }.show()
-
-
+                        }
+                    })
         }
 
+
     }
 
-
-    private fun goToLocation(lat: Double, lng: Double) {
-        val ll = LatLng(lat, lng)
-        val update = CameraUpdateFactory.newLatLng(ll)
-        mGoogleMap.moveCamera(update)
-    }
 
     private fun goToLocationZoom(lat: Double, lng: Double, zoom: Float) {
         val ll = LatLng(lat, lng)
@@ -142,11 +154,20 @@ class AddLocationFragment : Fragment(), OnMapReadyCallback {
 
     }
 
-    private fun addMarkerToMap(googleMap: GoogleMap, lat: Double, lon: Double) {
+    private fun addMarkerToMap(googleMap: GoogleMap, lat: Double, lon: Double): Marker? {
         val options = MarkerOptions().position(LatLng(lat, lon))
-        googleMap.addMarker(options)
+        return googleMap.addMarker(options)
 
+    }
 
+    private fun removeMarkerFromMap(googleMap: GoogleMap, lat: Double, lon: Double) {
+        googleMap.setOnMarkerClickListener(object : GoogleMap.OnMarkerClickListener {
+            override fun onMarkerClick(p0: Marker?): Boolean {
+                p0?.remove()
+                return true
+            }
+
+        })
     }
 
     private fun googleServicesAvailable(): Boolean {

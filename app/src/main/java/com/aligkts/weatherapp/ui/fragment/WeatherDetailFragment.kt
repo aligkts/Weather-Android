@@ -7,7 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.aligkts.weatherapp.R
+import com.aligkts.weatherapp.dto.forecastByLocation.ListItem
 import com.aligkts.weatherapp.enums.WeatherStatus
 import com.aligkts.weatherapp.helper.Singleton
 import com.aligkts.weatherapp.network.RetrofitClient
@@ -18,17 +20,20 @@ import com.aligkts.weatherapp.ui.adapter.DetailAdapter
 import kotlinx.android.synthetic.main.fragment_weather_detail.*
 import retrofit2.Call
 import retrofit2.Response
-import java.text.SimpleDateFormat
 
 
 class WeatherDetailFragment : Fragment() {
 
     private var dataList = WeatherByLocationResponse()
     private var mAdapter = DetailAdapter(ArrayList())
+    private var dataListForecastFromRequest = ArrayList<ListItem>()
+    private var responseModel = ForecastByLocationResponse()
 
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
+    ): View? {
 
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_weather_detail, container, false)
@@ -66,14 +71,16 @@ class WeatherDetailFragment : Fragment() {
                         Toast.makeText(activity, "Request basarısız".plus(t), Toast.LENGTH_SHORT).show()
                     }
 
-                    override fun onResponse(call: Call<ForecastByLocationResponse>, response: Response<ForecastByLocationResponse>) {
+                    override fun onResponse(
+                            call: Call<ForecastByLocationResponse>,
+                            response: Response<ForecastByLocationResponse>
+                    ) {
+                        responseModel = response.body() as ForecastByLocationResponse
+                        for (i in 0 until responseModel.list!!.size step 8) {
+                            dataListForecastFromRequest.add(responseModel.list!![i]!!)
 
-                        val dayName = dateToDay(response.body()?.list?.get(2)?.dt_txt)
-                        val temp = tempFormatter(response.body()?.list?.get(2)?.main?.temp)
-                        setWeatherIcon(response.body()?.list?.get(2)?.weather?.get(0)?.main)
-
-
-                        Toast.makeText(activity, "Request başarılı", Toast.LENGTH_SHORT).show()
+                        }
+                        setRecyclerAdapter(dataListForecastFromRequest)
                     }
                 })
 
@@ -85,14 +92,7 @@ class WeatherDetailFragment : Fragment() {
         return centi.toString() + 0x00B0.toChar()
     }
 
-    private fun dateToDay(input: String?): String {
-        val inFormat = SimpleDateFormat("yyy-MM-dd")
-        val date = inFormat.parse(input)
-        val outFormat = SimpleDateFormat("EEEE")
-        val day = outFormat.format(date)
 
-        return day
-    }
 
     private fun setWeatherIcon(weatherStatus: String?) {
         when (weatherStatus) {
@@ -103,5 +103,13 @@ class WeatherDetailFragment : Fragment() {
 
         }
 
+    }
+
+    private fun setRecyclerAdapter(list: ArrayList<ListItem>) {
+        recyclerDetail.apply {
+            layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
+            adapter = mAdapter
+            (this.adapter as DetailAdapter).setNewList(list)
+        }
     }
 }

@@ -7,14 +7,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.aligkts.weatherapp.helper.INotifyRecycler
 import com.aligkts.weatherapp.network.response.WeatherByLocationResponse
 
-class FavoritesAdapter(var itemList: List<WeatherByLocationResponse>, var listener: INotifyRecycler) : RecyclerView.Adapter<FavoritesViewHolder>(),
-        Filterable {
-
+class FavoritesAdapter(var itemList: List<WeatherByLocationResponse>,
+                       var listener: INotifyRecycler) : RecyclerView.Adapter<FavoritesViewHolder>(),Filterable {
 
     lateinit var searchedListFiltered: List<WeatherByLocationResponse>
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavoritesViewHolder {
-
         return FavoritesViewHolder(parent)
     }
 
@@ -22,9 +20,8 @@ class FavoritesAdapter(var itemList: List<WeatherByLocationResponse>, var listen
         return searchedListFiltered.size
     }
 
-
     override fun onBindViewHolder(holder: FavoritesViewHolder, position: Int) {
-        holder.bindTo(holder.itemView.context, searchedListFiltered[position], listener)
+        holder.bindTo(holder.itemView.context,searchedListFiltered[position],listener)
         holder.itemView.isLongClickable = true
     }
 
@@ -34,11 +31,10 @@ class FavoritesAdapter(var itemList: List<WeatherByLocationResponse>, var listen
         notifyDataSetChanged()
     }
 
-
     override fun getFilter(): Filter {
         return object : Filter() {
             override fun performFiltering(charSequence: CharSequence?): FilterResults {
-                var charString = charSequence.toString()
+                val charString = charSequence.toString()
                 if (charString.isEmpty()) {
                     searchedListFiltered = itemList
                 } else {
@@ -50,22 +46,16 @@ class FavoritesAdapter(var itemList: List<WeatherByLocationResponse>, var listen
                     }
                     searchedListFiltered = filteredList
                 }
-
                 val filterResults = FilterResults()
                 filterResults.values = searchedListFiltered
                 return filterResults
             }
-
             override fun publishResults(charSequence: CharSequence?, filterResults: FilterResults?) {
-                searchedListFiltered = filterResults?.values as ArrayList<WeatherByLocationResponse>
-                notifyDataSetChanged()
+                filterResults?.let {
+                    searchedListFiltered = it.values as ArrayList<WeatherByLocationResponse>
+                    notifyDataSetChanged()
+                }
             }
-
-
         }
-
-
     }
-
-
 }

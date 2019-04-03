@@ -7,7 +7,8 @@ import android.database.sqlite.SQLiteOpenHelper
 import com.aligkts.weatherapp.dto.sqlite.FavoriteLocationEntity
 import com.aligkts.weatherapp.network.response.WeatherByLocationResponse
 
-class DBHelper(val context: Context) : SQLiteOpenHelper(context, DBHelper.DATABASE_NAME, null, DBHelper.DATABASE_VERSION) {
+class DBConnectionManager(val context: Context) :
+    SQLiteOpenHelper(context, DBConnectionManager.DATABASE_NAME, null, DBConnectionManager.DATABASE_VERSION) {
     private val TABLE_NAME = "Favorites"
     private val COL_ID = "id"
     private val COL_LAT = "lat"
@@ -24,22 +25,20 @@ class DBHelper(val context: Context) : SQLiteOpenHelper(context, DBHelper.DATABA
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
-    }
 
+    }
 
     fun insertData(model: WeatherByLocationResponse): Boolean {
         val sqliteDB = this.writableDatabase
         val contentValues = ContentValues()
         contentValues.put(COL_ID, model.id)
-        contentValues.put(COL_LAT, model.coord?.lat)
-        contentValues.put(COL_LON, model.coord?.lon)
-
+        model.coord?.let {
+            contentValues.put(COL_LAT, model.coord.lat)
+            contentValues.put(COL_LON, model.coord.lon)
+        }
         val result = sqliteDB.insert(TABLE_NAME, null, contentValues)
-        //Toast.makeText(context, if (result != -1L) "Kayıt Başarılı"  else "Kayıt yapılamadı.", Toast.LENGTH_SHORT).show()
-
         return result != -1L
     }
-
 
     fun readFavoritesList(): ArrayList<FavoriteLocationEntity> {
         val locationList = mutableListOf<FavoriteLocationEntity>()
@@ -60,13 +59,10 @@ class DBHelper(val context: Context) : SQLiteOpenHelper(context, DBHelper.DATABA
         return locationList as ArrayList<FavoriteLocationEntity>
     }
 
-
     fun deleteClickedItem(position: Int) {
         val sqliteDB = this.writableDatabase
         val query = "DELETE FROM $TABLE_NAME WHERE id=$position"
         sqliteDB.execSQL(query)
         sqliteDB.close()
-
     }
-
 }

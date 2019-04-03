@@ -5,12 +5,13 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.aligkts.weatherapp.R
-import com.aligkts.weatherapp.database.DBHelper
-import com.aligkts.weatherapp.enums.WeatherStatus
+import com.aligkts.weatherapp.database.DBConnectionManager
+import com.aligkts.weatherapp.helper.DownloadImage
 import com.aligkts.weatherapp.helper.INotifyRecycler
 import com.aligkts.weatherapp.helper.Singleton
 import com.aligkts.weatherapp.network.response.WeatherByLocationResponse
@@ -20,73 +21,45 @@ class FavoritesViewHolder(viewGroup: ViewGroup) :
                 LayoutInflater.from(viewGroup.context).inflate(
                         R.layout.item_bookmark,
                         viewGroup,
-                        false
-                )
-        ) {
-
+                        false)) {
 
     private val txtItemTitle by lazy { itemView.findViewById<TextView>(R.id.txtItemTitle) }
     private val txtItemTemp by lazy { itemView.findViewById<TextView>(R.id.txtItemTemp) }
-
+    private val imgBookmarkItem by lazy { itemView.findViewById<ImageView>(R.id.imgBookmarkItem) }
+    private val API_IMAGE_BASE_URL = "http://openweathermap.org/img/w/"
 
     fun bindTo(context: Context, model: WeatherByLocationResponse, listener: INotifyRecycler) {
-
         txtItemTitle.text = model.name
-        val temp = model.main?.temp
-        var centi = (temp?.toInt()?.minus(32))?.div(1.8000)
-        centi = Math.round(centi!!).toDouble()
-        txtItemTemp.text = centi.toString() + 0x00B0.toChar()
-        setWeatherIcon(model.weather!![0]!!.main.toString())
-
-
+        model.main?.let {_main ->
+            val temp = _main.temp
+            temp?.let {_temp ->
+                var centi = (_temp.toInt()).minus(32).div(1.8000)
+                centi = Math.round(centi).toDouble()
+                txtItemTemp.text = centi.toString() + 0x00B0.toChar()
+            }
+        }
+        model.weather?.let { _listWeather ->
+            _listWeather.first()?.let { _index ->
+                val weatherStatus = _index.icon.toString()
+                val url =API_IMAGE_BASE_URL.plus(weatherStatus).plus(".png")
+                DownloadImage(imgBookmarkItem).execute(url)
+            }
+        }
         itemView.setOnLongClickListener(object : View.OnLongClickListener {
             override fun onLongClick(v: View?): Boolean {
-
                 AlertDialog.Builder(context)
                         .setMessage("Bu lokasyonu silmek istediğinize emin misiniz?")
                         .setNegativeButton("Hayır") { dialog, which -> dialog.dismiss() }
                         .setPositiveButton("Evet") { dialog, which ->
-                            model.id?.let { DBHelper(context).deleteClickedItem(it) }
+                            model.id?.let { DBConnectionManager(context).deleteClickedItem(it) }
                             listener.refreshRecycler(adapterPosition)
                         }.show()
-
                 return true
             }
-
         })
-
         itemView.setOnClickListener {
             Singleton.instance?.setOtherList(model)
             Navigation.findNavController(it).navigate(R.id.weatherDetailFragment)
         }
-
     }
-
-
-    private fun setWeatherIcon(weatherStatus: String) {
-        when (weatherStatus) {
-            WeatherStatus.Clear.toString() -> txtItemTemp.setCompoundDrawablesWithIntrinsicBounds(
-                    0,
-                    0,
-                    R.drawable.ic_clear,
-                    0
-            )
-            WeatherStatus.Clouds.toString() -> txtItemTemp.setCompoundDrawablesWithIntrinsicBounds(
-                    0,
-                    0,
-                    R.drawable.ic_clouds,
-                    0
-            )
-            WeatherStatus.Rain.toString() -> txtItemTemp.setCompoundDrawablesWithIntrinsicBounds(
-                    0,
-                    0,
-                    R.drawable.ic_rainy,
-                    0
-            )
-            else -> txtItemTemp.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_weather_other, 0)
-
-        }
-    }
-
-
 }

@@ -1,4 +1,4 @@
-package com.aligkts.weatherapp.ui.fragment
+package com.aligkts.weatherapp.ui
 
 
 import android.app.AlertDialog
@@ -15,8 +15,9 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.aligkts.weatherapp.R
-import com.aligkts.weatherapp.database.DBHelper
+import com.aligkts.weatherapp.database.DBConnectionManager
 import com.aligkts.weatherapp.helper.Singleton
+import com.aligkts.weatherapp.network.Proxy
 import com.aligkts.weatherapp.network.RetrofitClient
 import com.aligkts.weatherapp.network.WeatherService
 import com.aligkts.weatherapp.network.response.WeatherByLocationResponse
@@ -38,100 +39,84 @@ class AddLocationFragment : Fragment(), OnMapReadyCallback {
     lateinit var mGoogleMap: GoogleMap
     private var currentLat: Double? = 0.0
     private var currentLng: Double? = 0.0
-    private val db by lazy { DBHelper(activity!!.applicationContext) }
+    private val db by lazy { DBConnectionManager(activity!!.applicationContext) }
     private val favoritesList by lazy { db.readFavoritesList() }
     private var currentList = WeatherByLocationResponse()
-    override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
-    ): View? {
 
-
-        // Inflate the layout for this fragment
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_add_location, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        currentList = Singleton.instance?.getCurrentList()!!
-        currentLat = currentList.coord?.lat
-        currentLng = currentList.coord?.lon
-
+        Singleton.instance?.let {
+           currentList = it.getCurrentList()
+           currentList.coord?.let {_coord ->
+               _coord.lat?.let {_lat ->
+                   currentLat = _lat
+               }
+               _coord.lon?.let {_lon ->
+                   currentLng = _lon
+               }
+           }
+        }
         if (googleServicesAvailable()) {
             mapView.onCreate(savedInstanceState)
             mapView.onResume()
             mapView.getMapAsync(this)
         }
-
         edtPlace.setOnKeyListener(object : View.OnKeyListener {
             override fun onKey(v: View?, keyCode: Int, event: KeyEvent): Boolean {
                 if (keyCode == EditorInfo.IME_ACTION_SEARCH ||
                         keyCode == EditorInfo.IME_ACTION_DONE ||
                         event.action == KeyEvent.ACTION_DOWN &&
                         event.keyCode == KeyEvent.KEYCODE_ENTER) {
-
                     geoLocate(view)
-
-
                 }
                 return false
             }
-
         })
-
         btnFindPlace.setOnClickListener { geoLocate(view) }
-
     }
-
 
     override fun onMapReady(googleMap: GoogleMap) {
         mGoogleMap = googleMap
-
         if (favoritesList.size > 0) {
             for (i in 0 until favoritesList.size) {
                 addMarkerToMap(mGoogleMap, favoritesList[i].lat, favoritesList[i].lon)
             }
         }
-
-        goToLocationZoom(currentLat!!, currentLng!!, 15F)
-
-        mGoogleMap.setOnMapLongClickListener {
-
-            RetrofitClient.getClient()
-                    .create(WeatherService::class.java)
-                    .getWeatherByLatLng(it.latitude, it.longitude, getString(R.string.weather_app_id), "Imperial")
-                    .enqueue(object : retrofit2.Callback<WeatherByLocationResponse> {
-                        override fun onFailure(call: Call<WeatherByLocationResponse>, t: Throwable) {
-                            Toast.makeText(activity, "Request basarısız".plus(t), Toast.LENGTH_SHORT).show()
-                        }
-
-                        override fun onResponse(
-                                call: Call<WeatherByLocationResponse>,
-                                response: Response<WeatherByLocationResponse>
-                        ) {
-
-                            val marker = addMarkerToMap(mGoogleMap, response.body()!!.coord?.lat!!, response.body()!!.coord?.lon!!)
-
-
-                            val alertDialog = AlertDialog.Builder(activity)
-                                    .setMessage("Bu lokasyonu eklemek istediğinize emin misiniz?")
-                                    .setNegativeButton("Hayır") { dialog, which ->
-                                        marker?.remove()
-                                        dialog.dismiss()
-                                    }
-                                    .setPositiveButton("Evet") { dialog, which ->
-                                        db.insertData(response.body()!!)
-
-                                    }.show()
-
-                        }
-                    })
+        currentLat?.let {_lat ->
+            currentLng?.let {_lon ->
+                goToLocationZoom(_lat, _lon, 15F)
+            }
         }
+        mGoogleMap.setOnMapLongClickListener {
+            Proxy().getRequestByLocation(it.latitude, it.longitude) { isSuccess, response ->
+                if (isSuccess) {
+                    response?.let { _response ->
+                        _response.coord?.let { _coord ->
+                            _coord.lat?.let { _lat ->
+                                _coord.lon?.let { _lon ->
+                                    val marker = addMarkerToMap(mGoogleMap, _lat, _lon)
+                                    AlertDialog.Builder(activity)
+                                            .setMessage("Bu lokasyonu eklemek istediğinize emin misiniz?")
+                                            .setNegativeButton("Hayır") { dialog, which ->
+                                                marker?.remove()
+                                                dialog.dismiss()
+                                            }
+                                            .setPositiveButton("Evet") { dialog, which ->
+                                                db.insertData(_response)
 
-
+                                            }.show()
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
-
 
     private fun goToLocationZoom(lat: Double, lng: Double, zoom: Float) {
         val ll = LatLng(lat, lng)
@@ -143,31 +128,16 @@ class AddLocationFragment : Fragment(), OnMapReadyCallback {
         val location = edtPlace.text.toString()
         val gc = Geocoder(activity)
         val list = gc.getFromLocationName(location, 1) as List<Address>
-        val address = list[0]
-        val locality = address.locality
-
+        val address = list.first()
         val lat = address.latitude
         val lng = address.longitude
-
         goToLocationZoom(lat, lng, 15F)
         view.hideKeyboard()
-
     }
 
     private fun addMarkerToMap(googleMap: GoogleMap, lat: Double, lon: Double): Marker? {
         val options = MarkerOptions().position(LatLng(lat, lon))
         return googleMap.addMarker(options)
-
-    }
-
-    private fun removeMarkerFromMap(googleMap: GoogleMap, lat: Double, lon: Double) {
-        googleMap.setOnMarkerClickListener(object : GoogleMap.OnMarkerClickListener {
-            override fun onMarkerClick(p0: Marker?): Boolean {
-                p0?.remove()
-                return true
-            }
-
-        })
     }
 
     private fun googleServicesAvailable(): Boolean {

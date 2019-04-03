@@ -9,21 +9,14 @@ import retrofit2.http.Query
 interface WeatherService {
 
     @GET("weather")
-    fun getWeatherByLatLng(
-            @Query("lat") lat: Double?,
-            @Query("lon") lon: Double?,
-            @Query("APPID") appID: String,
-            @Query("units") units: String
-    ): Call<WeatherByLocationResponse>
-
+    fun getWeatherByLatLng(@Query("lat") lat: Double?,
+                           @Query("lon") lon: Double?,
+                           @Query("APPID") appID: String,
+                           @Query("units") units: String): Call<WeatherByLocationResponse>
 
     @GET("forecast")
-    fun getForecastByLatLng(
-            @Query("lat") lat: Double?,
-            @Query("lon") lon: Double?,
-            @Query("APPID") appID: String,
-            @Query("units") units: String
-    ): Call<ForecastByLocationResponse>
-
-
+    fun getForecastByLatLng(@Query("lat") lat: Double?,
+                            @Query("lon") lon: Double?,
+                            @Query("APPID") appID: String,
+                            @Query("units") units: String): Call<ForecastByLocationResponse>
 }

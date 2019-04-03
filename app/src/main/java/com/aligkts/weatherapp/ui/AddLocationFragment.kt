@@ -16,10 +16,8 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.aligkts.weatherapp.R
 import com.aligkts.weatherapp.database.DBConnectionManager
-import com.aligkts.weatherapp.helper.Singleton
+import com.aligkts.weatherapp.util.Singleton
 import com.aligkts.weatherapp.network.Proxy
-import com.aligkts.weatherapp.network.RetrofitClient
-import com.aligkts.weatherapp.network.WeatherService
 import com.aligkts.weatherapp.network.response.WeatherByLocationResponse
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
@@ -30,8 +28,6 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.android.synthetic.main.fragment_add_location.*
-import retrofit2.Call
-import retrofit2.Response
 
 
 class AddLocationFragment : Fragment(), OnMapReadyCallback {

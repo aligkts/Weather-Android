@@ -1,4 +1,4 @@
-package com.aligkts.weatherapp.helper
+package com.aligkts.weatherapp.util
 
 import com.aligkts.weatherapp.network.response.WeatherByLocationResponse
 

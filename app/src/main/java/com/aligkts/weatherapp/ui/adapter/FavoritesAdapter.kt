@@ -4,7 +4,7 @@ import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
-import com.aligkts.weatherapp.helper.INotifyRecycler
+import com.aligkts.weatherapp.util.INotifyRecycler
 import com.aligkts.weatherapp.network.response.WeatherByLocationResponse
 
 class FavoritesAdapter(var itemList: List<WeatherByLocationResponse>,

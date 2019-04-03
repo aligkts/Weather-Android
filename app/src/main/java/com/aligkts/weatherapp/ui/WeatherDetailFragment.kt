@@ -5,23 +5,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.aligkts.weatherapp.R
 import com.aligkts.weatherapp.dto.forecastbylocation.ListItem
-import com.aligkts.weatherapp.helper.DownloadImage
-import com.aligkts.weatherapp.helper.Singleton
+import com.aligkts.weatherapp.util.DownloadImage
+import com.aligkts.weatherapp.util.Singleton
 import com.aligkts.weatherapp.network.Proxy
-import com.aligkts.weatherapp.network.RetrofitClient
-import com.aligkts.weatherapp.network.WeatherService
 import com.aligkts.weatherapp.network.response.ForecastByLocationResponse
 import com.aligkts.weatherapp.network.response.WeatherByLocationResponse
 import com.aligkts.weatherapp.ui.adapter.DetailAdapter
 import kotlinx.android.synthetic.main.fragment_weather_detail.*
-import retrofit2.Call
-import retrofit2.Response
 
 
 class WeatherDetailFragment : Fragment() {

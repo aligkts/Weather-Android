@@ -1,4 +1,4 @@
-package com.aligkts.weatherapp.helper
+package com.aligkts.weatherapp.util
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory

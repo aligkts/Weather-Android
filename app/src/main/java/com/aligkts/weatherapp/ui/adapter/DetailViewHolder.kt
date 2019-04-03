@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.aligkts.weatherapp.R
 import com.aligkts.weatherapp.dto.forecastbylocation.ListItem
-import com.aligkts.weatherapp.helper.DownloadImage
+import com.aligkts.weatherapp.util.DownloadImage
 import java.text.SimpleDateFormat
 
 class DetailViewHolder(viewGroup: ViewGroup) :

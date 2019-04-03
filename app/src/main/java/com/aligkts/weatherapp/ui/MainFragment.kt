@@ -24,9 +24,9 @@ import com.aligkts.weatherapp.R
 import com.aligkts.weatherapp.database.DBConnectionManager
 import com.aligkts.weatherapp.dto.sqlite.FavoriteLocationEntity
 import com.aligkts.weatherapp.dto.weatherbylocation.Coord
-import com.aligkts.weatherapp.helper.DownloadImage
-import com.aligkts.weatherapp.helper.INotifyRecycler
-import com.aligkts.weatherapp.helper.Singleton
+import com.aligkts.weatherapp.util.DownloadImage
+import com.aligkts.weatherapp.util.INotifyRecycler
+import com.aligkts.weatherapp.util.Singleton
 import com.aligkts.weatherapp.network.Proxy
 import com.aligkts.weatherapp.network.response.WeatherByLocationResponse
 import com.aligkts.weatherapp.ui.adapter.FavoritesAdapter

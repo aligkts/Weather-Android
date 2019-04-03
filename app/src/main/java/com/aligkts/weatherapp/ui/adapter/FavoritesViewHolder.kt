@@ -11,9 +11,9 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.aligkts.weatherapp.R
 import com.aligkts.weatherapp.database.DBConnectionManager
-import com.aligkts.weatherapp.helper.DownloadImage
-import com.aligkts.weatherapp.helper.INotifyRecycler
-import com.aligkts.weatherapp.helper.Singleton
+import com.aligkts.weatherapp.util.DownloadImage
+import com.aligkts.weatherapp.util.INotifyRecycler
+import com.aligkts.weatherapp.util.Singleton
 import com.aligkts.weatherapp.network.response.WeatherByLocationResponse
 
 class FavoritesViewHolder(viewGroup: ViewGroup) :

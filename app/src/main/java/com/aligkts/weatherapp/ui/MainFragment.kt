@@ -37,8 +37,8 @@ class MainFragment : Fragment(), INotifyRecycler {
     private val LOCATION_REQUEST_CODE = 101
     lateinit var locationManager: LocationManager
     private var permissions = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
-    private var lat: Double? = 0.0
-    private var lon: Double? = 0.0
+    private var latitude: Double? = 0.0
+    private var longitude: Double? = 0.0
     private val db by lazy { DBConnectionManager(activity!!.applicationContext) }
     private var favoritesListFromDb = ArrayList<FavoriteLocationEntity>()
     private var dataListFavoritesFromRequest = ArrayList<WeatherByLocationResponse>()
@@ -49,11 +49,8 @@ class MainFragment : Fragment(), INotifyRecycler {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         dataListFavoritesFromRequest.clear()
         favoritesListFromDb = db.readFavoritesList()
-        if (ContextCompat.checkSelfPermission(
-                        activity!!,
-                        Manifest.permission.ACCESS_FINE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED
-        ) {
+        if (ContextCompat.checkSelfPermission(activity!!,
+                                              Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(permissions, LOCATION_REQUEST_CODE)
         } else {
             // Permission has already been granted
@@ -62,9 +59,8 @@ class MainFragment : Fragment(), INotifyRecycler {
         if (favoritesListFromDb.size > 0) {
             for (i in 0 until favoritesListFromDb.size) {
                 Proxy().getRequestByLocation(
-                        favoritesListFromDb[i].lat,
-                        favoritesListFromDb[i].lon
-                ) { isSuccess, response ->
+                        favoritesListFromDb[i].latitude,
+                        favoritesListFromDb[i].longitude) { isSuccess, response ->
                     response?.let {
                         responseModel = response
                         dataListFavoritesFromRequest.add(responseModel)
@@ -117,8 +113,8 @@ class MainFragment : Fragment(), INotifyRecycler {
     private fun findLocation(): Coord {
         locationManager = activity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         val providers = locationManager.getProviders(true)
-        var lat: Double? = 0.0
-        var lon: Double? = 0.0
+        var latitude: Double? = 0.0
+        var longitude: Double? = 0.0
 
         for (provider in providers) {
             locationManager.requestLocationUpdates(provider, 1000L, 0F,
@@ -128,30 +124,32 @@ class MainFragment : Fragment(), INotifyRecycler {
                         }
 
                         override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
+
                         }
 
                         override fun onProviderEnabled(provider: String?) {
+
                         }
 
                         override fun onProviderDisabled(provider: String?) {
-                        }
 
+                        }
                     })
             val location = locationManager.getLastKnownLocation(provider)
             if (location != null) {
-                lat = location.latitude
-                lon = location.longitude
+                latitude = location.latitude
+                longitude = location.longitude
             }
         }
-        return Coord(lon, lat)
+        return Coord(latitude, longitude)
     }
 
     private fun setCurrentWeather() {
-        lat = findLocation().lat
-        lon = findLocation().lon
-        lat?.let { _lat ->
-            lon?.let { _lon ->
-                Proxy().getRequestByLocation(_lat, _lon) { isSuccess, response ->
+        latitude = findLocation().lat
+        longitude = findLocation().lon
+        latitude?.let { _latitude ->
+            longitude?.let { _longitude ->
+                Proxy().getRequestByLocation(_latitude, _longitude) { isSuccess, response ->
                     if (isSuccess) {
                         response?.let {
                             Singleton.instance?.let { _singleton ->
@@ -192,7 +190,6 @@ class MainFragment : Fragment(), INotifyRecycler {
                     val uri = Uri.fromParts("package", activity!!.packageName, null)
                     intent.data = uri
                     context?.startActivity(intent)
-
                 }.setCancelable(false).create().show()
     }
 

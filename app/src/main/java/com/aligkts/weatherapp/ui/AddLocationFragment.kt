@@ -48,11 +48,11 @@ class AddLocationFragment : Fragment(), OnMapReadyCallback {
         Singleton.instance?.let {
            currentList = it.getCurrentList()
            currentList.coord?.let {_coord ->
-               _coord.lat?.let {_lat ->
-                   currentLat = _lat
+               _coord.lat?.let {_latitude ->
+                   currentLat = _latitude
                }
-               _coord.lon?.let {_lon ->
-                   currentLng = _lon
+               _coord.lon?.let {_longitude ->
+                   currentLng = _longitude
                }
            }
         }
@@ -82,9 +82,9 @@ class AddLocationFragment : Fragment(), OnMapReadyCallback {
                 addMarkerToMap(mGoogleMap, favoritesList[i].lat, favoritesList[i].lon)
             }
         }
-        currentLat?.let {_lat ->
-            currentLng?.let {_lon ->
-                goToLocationZoom(_lat, _lon, 15F)
+        currentLat?.let {_latitude ->
+            currentLng?.let {_longitude ->
+                goToLocationZoom(_latitude, _longitude, 15F)
             }
         }
         mGoogleMap.setOnMapLongClickListener {
@@ -92,9 +92,9 @@ class AddLocationFragment : Fragment(), OnMapReadyCallback {
                 if (isSuccess) {
                     response?.let { _response ->
                         _response.coord?.let { _coord ->
-                            _coord.lat?.let { _lat ->
-                                _coord.lon?.let { _lon ->
-                                    val marker = addMarkerToMap(mGoogleMap, _lat, _lon)
+                            _coord.lat?.let { _latitude ->
+                                _coord.lon?.let { _longitude ->
+                                    val marker = addMarkerToMap(mGoogleMap, _latitude, _longitude)
                                     AlertDialog.Builder(activity)
                                             .setMessage("Bu lokasyonu eklemek istediğinize emin misiniz?")
                                             .setNegativeButton("Hayır") { dialog, which ->
@@ -114,25 +114,25 @@ class AddLocationFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-    private fun goToLocationZoom(lat: Double, lng: Double, zoom: Float) {
-        val ll = LatLng(lat, lng)
-        val update = CameraUpdateFactory.newLatLngZoom(ll, zoom)
+    private fun goToLocationZoom(latitude: Double, longitude: Double, zoom: Float) {
+        val latLng = LatLng(latitude, longitude)
+        val update = CameraUpdateFactory.newLatLngZoom(latLng, zoom)
         mGoogleMap.moveCamera(update)
     }
 
     private fun geoLocate(view: View) {
         val location = edtPlace.text.toString()
-        val gc = Geocoder(activity)
-        val list = gc.getFromLocationName(location, 1) as List<Address>
+        val geocoder = Geocoder(activity)
+        val list = geocoder.getFromLocationName(location, 1) as List<Address>
         val address = list.first()
-        val lat = address.latitude
-        val lng = address.longitude
-        goToLocationZoom(lat, lng, 15F)
+        val latitude = address.latitude
+        val longitude = address.longitude
+        goToLocationZoom(latitude, longitude, 15F)
         view.hideKeyboard()
     }
 
-    private fun addMarkerToMap(googleMap: GoogleMap, lat: Double, lon: Double): Marker? {
-        val options = MarkerOptions().position(LatLng(lat, lon))
+    private fun addMarkerToMap(googleMap: GoogleMap, latitude: Double, longitude: Double): Marker? {
+        val options = MarkerOptions().position(LatLng(latitude, longitude))
         return googleMap.addMarker(options)
     }
 

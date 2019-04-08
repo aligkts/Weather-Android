@@ -2,6 +2,7 @@ package com.aligkts.weatherapp.ui
 
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,22 +11,26 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.aligkts.weatherapp.R
 import com.aligkts.weatherapp.dto.forecastbylocation.ListItem
+import com.aligkts.weatherapp.network.AsyncTaskHandleJson
 import com.aligkts.weatherapp.util.DownloadImage
 import com.aligkts.weatherapp.util.Singleton
 import com.aligkts.weatherapp.network.Proxy
 import com.aligkts.weatherapp.network.response.ForecastByLocationResponse
 import com.aligkts.weatherapp.network.response.WeatherByLocationResponse
 import com.aligkts.weatherapp.ui.adapter.DetailAdapter
+import com.aligkts.weatherapp.util.OnTaskCompleted
 import kotlinx.android.synthetic.main.fragment_weather_detail.*
 
 
-class WeatherDetailFragment : Fragment() {
+class WeatherDetailFragment : Fragment() , OnTaskCompleted{
 
     private var dataList = WeatherByLocationResponse()
     private var mAdapter = DetailAdapter(ArrayList())
     private var dataListForecastFromRequest = ArrayList<ListItem>()
     private var responseModel = ForecastByLocationResponse()
     private val API_IMAGE_BASE_URL = "http://openweathermap.org/img/w/"
+    private val API_FORECAST_BASE_URL="http://api.openweathermap.org/data/2.5/forecast?"
+    private val APP_ID = "3c75e1a077769372966bc6050f85b57a"
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_weather_detail, container, false)
@@ -65,19 +70,20 @@ class WeatherDetailFragment : Fragment() {
             }
         }
         dataList.coord?.let { _coord ->
-            Proxy().getRequestForForecast(_coord.lat, _coord.lon) { isSuccess, response ->
-                if (isSuccess) {
-                    responseModel = response as ForecastByLocationResponse
-                    responseModel.list?.let { _responseList ->
-                        for (i in 0 until _responseList.size step 8) {
-                            _responseList[i]?.let {
-                                dataListForecastFromRequest.add(it)
-                            }
-                        }
-                        setRecyclerAdapter(dataListForecastFromRequest)
-                    }
+            val asyncTaskHandleJson = AsyncTaskHandleJson()
+            asyncTaskHandleJson.listener= this
+            asyncTaskHandleJson.execute(API_FORECAST_BASE_URL+"lat="+_coord.lat+"&lon="+_coord.lon+"&&APPID="+APP_ID+"&units=Metric")
+        }
+    }
+
+    override fun onTaskCompleted(model: ForecastByLocationResponse) {
+        model.list?.let {_responseList ->
+            for(i in 0 until _responseList.size step 8) {
+                _responseList[i]?.let {
+                    dataListForecastFromRequest.add(it)
                 }
             }
+            setRecyclerAdapter(dataListForecastFromRequest)
         }
     }
 

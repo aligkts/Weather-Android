@@ -16,6 +16,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.aligkts.weatherapp.R
 import com.aligkts.weatherapp.database.DBConnectionManager
+import com.aligkts.weatherapp.dto.sqlite.FavoriteLocationEntity
 import com.aligkts.weatherapp.util.Singleton
 import com.aligkts.weatherapp.network.Proxy
 import com.aligkts.weatherapp.network.response.WeatherByLocationResponse
@@ -79,7 +80,7 @@ class AddLocationFragment : Fragment(), OnMapReadyCallback {
         mGoogleMap = googleMap
         if (favoritesList.size > 0) {
             for (i in 0 until favoritesList.size) {
-                addMarkerToMap(mGoogleMap, favoritesList[i].lat, favoritesList[i].lon)
+                addMarkerToMap(mGoogleMap, favoritesList[i].latitude, favoritesList[i].longitude)
             }
         }
         currentLat?.let {_latitude ->
@@ -102,7 +103,17 @@ class AddLocationFragment : Fragment(), OnMapReadyCallback {
                                                 dialog.dismiss()
                                             }
                                             .setPositiveButton("Evet") { dialog, which ->
-                                                db.insertData(_response)
+                                                val model = FavoriteLocationEntity()
+                                                _response.id?.let {_id ->
+                                                    _response.coord.lat?.let {_lat  ->
+                                                        _response.coord.lon?.let {_lon ->
+                                                            model.id = _id
+                                                            model.latitude = _lat
+                                                            model.longitude = _lon
+                                                        }
+                                                    }
+                                                }
+                                                db.insertData(model)
 
                                             }.show()
                                 }

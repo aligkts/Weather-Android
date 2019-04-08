@@ -54,7 +54,7 @@ class MainFragment : Fragment(), INotifyRecycler {
             requestPermissions(permissions, LOCATION_REQUEST_CODE)
         } else {
             // Permission has already been granted
-            setCurrentWeather()
+            setCurrentWeather(findLocation())
         }
         if (favoritesListFromDb.size > 0) {
             for (i in 0 until favoritesListFromDb.size) {
@@ -110,14 +110,17 @@ class MainFragment : Fragment(), INotifyRecycler {
         mAdapter.notifyDataSetChanged()
     }
 
-    private fun findLocation(): Coord {
+     private fun findLocation(): Coord {
         locationManager = activity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         val providers = locationManager.getProviders(true)
         var latitude: Double? = 0.0
         var longitude: Double? = 0.0
 
-        for (provider in providers) {
-            locationManager.requestLocationUpdates(provider, 1000L, 0F,
+        /*if (ContextCompat.checkSelfPermission(activity!!,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED) */
+            for (provider in providers) {
+                locationManager.requestLocationUpdates(provider, 1000L, 0F,
                     object : LocationListener {
                         override fun onLocationChanged(location: Location?) {
 
@@ -135,18 +138,18 @@ class MainFragment : Fragment(), INotifyRecycler {
 
                         }
                     })
-            val location = locationManager.getLastKnownLocation(provider)
-            if (location != null) {
-                latitude = location.latitude
-                longitude = location.longitude
+                val location = locationManager.getLastKnownLocation(provider)
+                if (location != null) {
+                    latitude = location.latitude
+                    longitude = location.longitude
+                }
             }
-        }
-        return Coord(latitude, longitude)
+         return Coord(longitude, latitude)
     }
 
-    private fun setCurrentWeather() {
-        latitude = findLocation().lat
-        longitude = findLocation().lon
+    private fun setCurrentWeather(coord: Coord) {
+        latitude = coord.lat
+        longitude = coord.lon
         latitude?.let { _latitude ->
             longitude?.let { _longitude ->
                 Proxy().getRequestByLocation(_latitude, _longitude) { isSuccess, response ->
@@ -181,10 +184,10 @@ class MainFragment : Fragment(), INotifyRecycler {
         }
     }
 
-    fun showAlertDialogForPermissionDeniedWithCheck() {
+    private fun showAlertDialogForPermissionDeniedWithCheck() {
         AlertDialog.Builder(activity!!)
-                .setMessage("App needs your location permission to get weather status")
-                .setPositiveButton("Settings") { dialog, which ->
+                .setMessage("Uygulama hava durumunu göstermek için konumunuza ihtiyaç duyuyor")
+                .setPositiveButton("Ayarlar") { dialog, which ->
                     val intent = Intent()
                     intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
                     val uri = Uri.fromParts("package", activity!!.packageName, null)
@@ -197,7 +200,7 @@ class MainFragment : Fragment(), INotifyRecycler {
         when (requestCode) {
             LOCATION_REQUEST_CODE -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                   setCurrentWeather()
+                   setCurrentWeather(findLocation())
                 } else if (!shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) ||
                         !shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION)
                 ) {

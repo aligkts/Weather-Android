@@ -5,7 +5,6 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import com.aligkts.weatherapp.dto.sqlite.FavoriteLocationEntity
-import com.aligkts.weatherapp.network.response.WeatherByLocationResponse
 
 class DBConnectionManager(val context: Context) :
     SQLiteOpenHelper(context, DBConnectionManager.DATABASE_NAME, null, DBConnectionManager.DATABASE_VERSION) {
@@ -28,14 +27,12 @@ class DBConnectionManager(val context: Context) :
 
     }
 
-    fun insertData(model: WeatherByLocationResponse): Boolean {
+    fun insertData(model: FavoriteLocationEntity): Boolean {
         val sqliteDB = this.writableDatabase
         val contentValues = ContentValues()
         contentValues.put(COL_ID, model.id)
-        model.coord?.let {
-            contentValues.put(COL_LAT, model.coord.lat)
-            contentValues.put(COL_LON, model.coord.lon)
-        }
+        contentValues.put(COL_LAT, model.latitude) //can be better with using lambda
+        contentValues.put(COL_LON, model.longitude)
         val result = sqliteDB.insert(TABLE_NAME, null, contentValues)
         return result != -1L
     }
@@ -49,8 +46,8 @@ class DBConnectionManager(val context: Context) :
             do {
                 val favorites = FavoriteLocationEntity()
                 favorites.id = result.getString(result.getColumnIndex(COL_ID)).toInt()
-                favorites.lat = result.getString(result.getColumnIndex(COL_LAT)).toDouble()
-                favorites.lon = result.getString(result.getColumnIndex(COL_LON)).toDouble()
+                favorites.latitude = result.getString(result.getColumnIndex(COL_LAT)).toDouble()
+                favorites.longitude = result.getString(result.getColumnIndex(COL_LON)).toDouble()
                 locationList.add(favorites)
             } while (result.moveToNext())
         }

@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
-    tools:context=".ui.fragment.MainFragment">
+    tools:context=".ui.MainFragment">
 
     <LinearLayout
         android:id="@+id/weatherPanel"
@@ -43,8 +43,7 @@
                 android:id="@+id/imgWeatherIcon"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
-                android:layout_margin="8dp"
-                android:src="@mipmap/ic_launcher" />
+                android:layout_margin="8dp"/>
 
             <TextView
                 android:id="@+id/txtCurrentTemp"

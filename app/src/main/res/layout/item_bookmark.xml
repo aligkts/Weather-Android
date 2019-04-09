@@ -22,10 +22,16 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_margin="8dp"
-        android:drawableEnd="@drawable/ic_clouds"
-        android:drawablePadding="10dp"
         android:text="14 C"
         android:textColor="@android:color/black" />
+
+    <ImageView
+        android:id="@+id/imgBookmarkItem"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:minWidth="30dp"
+        android:minHeight="30dp"
+        android:layout_margin="8dp"/>
 
 
 </LinearLayout>

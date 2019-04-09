@@ -1,10 +1,10 @@
-package com.aligkts.weatherapp.helper
+package com.aligkts.weatherapp.util
 
 import com.aligkts.weatherapp.network.response.WeatherByLocationResponse
 
 class Singleton private constructor() {
-    var dataList = WeatherByLocationResponse()
 
+    var dataList = WeatherByLocationResponse()
 
     companion object {
         private var uniqInstance: Singleton? = null
@@ -20,14 +20,19 @@ class Singleton private constructor() {
             }
     }
 
-    fun setArrayList(list : WeatherByLocationResponse){
+    fun setCurrentList(list: WeatherByLocationResponse) {
         this.dataList = list
     }
 
-    fun getArrayList(): WeatherByLocationResponse {
-
+    fun getCurrentList(): WeatherByLocationResponse {
         return this.dataList
     }
 
+    fun setOtherList(list: WeatherByLocationResponse?) {
+        if (list != null) this.dataList = list
+    }
 
+    fun getOtherList(): WeatherByLocationResponse {
+        return this.dataList
+    }
 }

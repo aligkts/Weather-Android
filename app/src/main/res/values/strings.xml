@@ -5,7 +5,19 @@
     <string name="map_api_key">AIzaSyDN37Ds-_OZtzTT4G2OMT0EvdQUntqsi3k</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="weather_app_id">3c75e1a077769372966bc6050f85b57a</string>
+    <string name="table_name">Favorites</string>
+    <string name="column_id">id</string>
+    <string name="column_lat">lat</string>
+    <string name="column_lon">lon</string>
+    <string name="alert_messade_add_location">Bu lokasyonu eklemek istediğinize emin misiniz?</string>
+    <string name="alert_button_negative">Hayır</string>
+    <string name="alert_button_positive">Evet</string>
+    <string name="warning_play_services">Play Service\'ye bağlanılamıyor</string>
+    <string name="permission_message">Uygulama hava durumunu göstermek için konumunuza ihtiyaç duyuyor</string>
+    <string name="settings">Ayarlar</string>
+    <string name="scheme">package</string>
+    <string name="imageType">.png</string>
+    <string name="alert_message_delete_location">Bu lokasyonu silmek istediğinize emin misiniz?</string>
 
 </resources>

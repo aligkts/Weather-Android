@@ -7,7 +7,7 @@
 
     <fragment
             android:id="@+id/mainFragment"
-            android:name="com.aligkts.weatherapp.ui.MainFragment"
+            android:name="com.aligkts.weatherapp.view.ui.MainFragment"
             android:label="fragment_main"
             tools:layout="@layout/fragment_main" >
         <action android:id="@+id/action_main_to_detail"
@@ -18,12 +18,12 @@
     </fragment>
     <fragment
         android:id="@+id/weatherDetailFragment"
-        android:name="com.aligkts.weatherapp.ui.WeatherDetailFragment"
+        android:name="com.aligkts.weatherapp.view.ui.WeatherDetailFragment"
         android:label="fragment_weather_detail"
         tools:layout="@layout/fragment_weather_detail" />
     <fragment
         android:id="@+id/addLocationFragment"
-        android:name="com.aligkts.weatherapp.ui.AddLocationFragment"
+        android:name="com.aligkts.weatherapp.view.ui.AddLocationFragment"
         android:label="fragment_add_location"
         tools:layout="@layout/fragment_add_location" />
 </navigation>

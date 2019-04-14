@@ -4,24 +4,24 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.AsyncTask
 import android.util.Log
-import android.widget.ImageView
+import com.aligkts.weatherapp.data.IDownloadedImageBitmap
 
-class DownloadImage(var bmImage: ImageView) : AsyncTask<String, Void, Bitmap>() {
+class DownloadImage(var listener: IDownloadedImageBitmap) : AsyncTask<String, Void, Bitmap>() {
 
     override fun doInBackground(vararg urls: String): Bitmap? {
         val urldisplay = urls.first()
-        var mIcon11: Bitmap? = null
+        var mIcon: Bitmap? = null
         try {
             val `in` = java.net.URL(urldisplay).openStream()
-            mIcon11 = BitmapFactory.decodeStream(`in`)
+            mIcon = BitmapFactory.decodeStream(`in`)
         } catch (e: Exception) {
             Log.e("Error", e.message)
             e.printStackTrace()
         }
-        return mIcon11
+        return mIcon
     }
 
     override fun onPostExecute(result: Bitmap) {
-        bmImage.setImageBitmap(result)
+        listener.sendDownloadedBitmap(result)
     }
 }

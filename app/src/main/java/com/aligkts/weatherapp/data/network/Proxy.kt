@@ -10,7 +10,6 @@ import retrofit2.Response
 class Proxy(var listenerRequestResult: IRequestResult) {
 
     lateinit var parsedModel: ModelResponse
-    val list = ArrayList<ModelResponse>()
 
     fun getRequestByLocation(latLng: LatLng) {
         RetrofitClient.getApi()
@@ -47,10 +46,9 @@ class Proxy(var listenerRequestResult: IRequestResult) {
                         response.body()?.let {
                             parsedModel = it
                         }
-                        list.add(parsedModel)
-                        /*listener?.let {
-                            it.bookmarkList(list)
-                        }*/
+                        listenerRequestResult?.let {
+                            it.onSuccess(parsedModel)
+                        }
 
                     }
                 })

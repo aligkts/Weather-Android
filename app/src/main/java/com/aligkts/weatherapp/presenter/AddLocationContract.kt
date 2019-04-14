@@ -9,7 +9,7 @@ import com.google.android.gms.maps.model.LatLng
 interface AddLocationContract {
 
     interface view {
-        fun currentLocationResponse(coord: Coord)
+        fun currentLocationData(coord: Coord)
     }
 
     interface presenter {
@@ -17,9 +17,5 @@ interface AddLocationContract {
         fun getResponseFromApiByLatLng(latLng: LatLng)
         fun checkWhetherGoogleServicesAvailable() : Boolean
         fun findSearchedLocation(location: String) : LatLng
-
-
     }
-
-
 }

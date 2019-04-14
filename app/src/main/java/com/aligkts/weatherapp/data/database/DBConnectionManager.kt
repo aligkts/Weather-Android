@@ -7,8 +7,12 @@ import android.database.sqlite.SQLiteOpenHelper
 import com.aligkts.weatherapp.R
 import com.aligkts.weatherapp.data.database.model.FavoriteLocation
 
+/**
+ * Doing database operations
+ */
+
 class DBConnectionManager(val context: Context) :
-    SQLiteOpenHelper(context, DBConnectionManager.DATABASE_NAME, null, DBConnectionManager.DATABASE_VERSION) {
+    SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
     private val TABLE_NAME = context.getString(R.string.table_name)
     private val COL_ID = context.getString(R.string.column_id)

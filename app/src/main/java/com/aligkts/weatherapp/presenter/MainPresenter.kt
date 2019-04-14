@@ -8,14 +8,21 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
 import androidx.core.content.ContextCompat
+import com.aligkts.weatherapp.data.database.DBConnectionManager
 import com.aligkts.weatherapp.data.dto.weatherbylocation.Coord
+import com.aligkts.weatherapp.data.network.IRequestResult
+import com.aligkts.weatherapp.data.network.Proxy
+import com.aligkts.weatherapp.data.network.model.ModelResponse
 
 /**
  * Responsible for handling actions from the MainFragment and updating the UI as required
  */
 
-class MainPresenter(private var context: Context,private var mView: MainContract.view) : MainContract.presenter{
+class MainPresenter(private var context: Context,private var mView: MainContract.view) : MainContract.presenter,IRequestResult{
 
+    private val db by lazy { DBConnectionManager(context) }
+    private val proxy by lazy { Proxy(this) }
+    val dataListFavoritesFromRequest = ArrayList<ModelResponse>()
     override fun getCurrentLocationCoordFromUser() {
         val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         val providers = locationManager.getProviders(true)
@@ -58,5 +65,21 @@ class MainPresenter(private var context: Context,private var mView: MainContract
         mView.currentWeatherClicked(bundle)
     }
 
+    override fun getBookmarkListFromDb() {
+        val bookmarkList = db.readFavoritesList()
+        if (bookmarkList.size > 0) {
+            for (i in 0 until bookmarkList.size) {
+                proxy.getRequestByLocationBookmark(bookmarkList[i].latitude, bookmarkList[i].longitude)
+            }
+        }
+    }
 
+    override fun onSuccess(modelResponse: ModelResponse) {
+        dataListFavoritesFromRequest.add(modelResponse)
+        mView.bookmarkList(dataListFavoritesFromRequest)
+    }
+
+    override fun onFailure(t: Throwable) {
+
+    }
 }

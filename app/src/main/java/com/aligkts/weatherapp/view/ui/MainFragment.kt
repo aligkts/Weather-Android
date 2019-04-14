@@ -5,6 +5,7 @@ import android.Manifest
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
@@ -18,6 +19,7 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.aligkts.weatherapp.R
+import com.aligkts.weatherapp.data.IDownloadedImageBitmap
 import com.aligkts.weatherapp.data.database.DBConnectionManager
 import com.aligkts.weatherapp.data.database.model.FavoriteLocation
 import com.aligkts.weatherapp.data.dto.weatherbylocation.Coord
@@ -34,48 +36,33 @@ import com.aligkts.weatherapp.util.Constant.Companion.API_IMAGE_BASE_URL
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.android.synthetic.main.fragment_main.*
 
-class MainFragment : Fragment(), INotifyRecycler, IRequestResult , MainContract.view {
+class MainFragment : Fragment(), INotifyRecycler, IRequestResult, MainContract.view, IDownloadedImageBitmap {
 
     private val LOCATION_REQUEST_CODE = 101
-    lateinit var locationManager: LocationManager
     private var permissions =
         arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
-    private val db by lazy { DBConnectionManager(activity!!.applicationContext) }
-    private var favoritesListFromDb = ArrayList<FavoriteLocation>()
     private var dataListFavoritesFromRequest = ArrayList<ModelResponse>()
-    private var mAdapter = FavoritesAdapter(ArrayList(), this)
+    private var mAdapter = FavoritesAdapter(ArrayList(),this)
     private val proxy = Proxy(this)
     private lateinit var presenter: MainPresenter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        presenter = MainPresenter(activity!!.applicationContext,this)
+        presenter = MainPresenter(activity!!.applicationContext, this)
         dataListFavoritesFromRequest.clear()
-        favoritesListFromDb = db.readFavoritesList()
 
-        if (ContextCompat.checkSelfPermission(activity!!,
-                                              Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                activity!!,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             requestPermissions(permissions, LOCATION_REQUEST_CODE)
         } else {
             // Permission has already been granted
             presenter.getCurrentLocationCoordFromUser()
-            //getCurrentWeatherFromApi()
         }
-        if (favoritesListFromDb.size > 0) {
-            for (i in 0 until favoritesListFromDb.size) {
-                proxy.getRequestByLocationBookmark(favoritesListFromDb[i].latitude,
-                                                   favoritesListFromDb[i].longitude)
-                /* responseModel = response
-                dataListFavoritesFromRequest.add(responseModel)
-                setRecyclerAdapter(dataListFavoritesFromRequest)*/
-            }
-        }
-        return inflater.inflate(com.aligkts.weatherapp.R.layout.fragment_main, container, false)
+        presenter.getBookmarkListFromDb()
+        return inflater.inflate(R.layout.fragment_main, container, false)
     }
-
-    /*override fun bookmarkList(list: ArrayList<ModelResponse>) {
-        setRecyclerAdapter(list)
-        dataListFavoritesFromRequest = list
-    } */
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -99,6 +86,12 @@ class MainFragment : Fragment(), INotifyRecycler, IRequestResult , MainContract.
             })
         }
     }
+
+    override fun bookmarkList(list: ArrayList<ModelResponse>) {
+        dataListFavoritesFromRequest = list
+        setRecyclerAdapter(list)
+    }
+
     override fun currentWeatherClicked(bundle: Bundle) {
         view?.let {
             Navigation.findNavController(it).navigate(R.id.action_main_to_detail, bundle)
@@ -108,7 +101,7 @@ class MainFragment : Fragment(), INotifyRecycler, IRequestResult , MainContract.
     override fun findUserLocation(coord: Coord) {
         coord.lat?.let { _latitude ->
             coord.lon?.let { _longitude ->
-                proxy.getRequestByLocation(LatLng( _latitude, _longitude))
+                proxy.getRequestByLocation(LatLng(_latitude, _longitude))
             }
         }
     }
@@ -121,11 +114,10 @@ class MainFragment : Fragment(), INotifyRecycler, IRequestResult , MainContract.
         }
     }
 
-    override fun refreshRecycler(i: Int) {
-        dataListFavoritesFromRequest.removeAt(i)
+    override fun removeBookmarkFromDb(position: Int) {
+        dataListFavoritesFromRequest.removeAt(position)
         mAdapter.notifyDataSetChanged()
     }
-
 
     override fun onSuccess(modelResponse: ModelResponse) {
         setCurrentUiComponents(modelResponse)
@@ -136,30 +128,31 @@ class MainFragment : Fragment(), INotifyRecycler, IRequestResult , MainContract.
     }
 
     private fun setCurrentUiComponents(response: ModelResponse) {
-        response?.let {
-            SingletonModel.instance?.let { _singleton ->
-                _singleton.setCurrentList(it)
-            }
-            val location = it.name
-            txtCurrentLocation.text = location
-            it.main?.let { _main ->
-                val temp = _main.temp
-                temp?.let {
-                    var centi = (temp.toInt().minus(32)).div(1.8000)
-                    centi = Math.round(centi).toDouble()
-                    txtCurrentTemp.text = centi.toString() + 0x00B0.toChar()
-                }
-            }
-            it.weather?.let { _listWeather ->
-                _listWeather.first()?.let { _index ->
-                    val weatherStatus = _index.icon.toString()
-                    val url = API_IMAGE_BASE_URL.plus(weatherStatus).plus(getString(R.string.imageType))
-                    DownloadImage(imgWeatherIcon).execute(url)
-                }
-            }
-            weatherPanel.visibility = View.VISIBLE
-            progressLoading.visibility = View.GONE
+        SingletonModel.instance?.let { _singleton ->
+            _singleton.setCurrentList(response)
         }
+        val location = response.name
+        txtCurrentLocation.text = location
+        response.main?.let { _main ->
+            val temp = _main.temp
+            temp?.let {
+                var centi = (temp.toInt().minus(32)).div(1.8000)
+                centi = Math.round(centi).toDouble()
+                txtCurrentTemp.text = centi.toString() + 0x00B0.toChar()
+            }
+        }
+        response.weather?.let { _listWeather ->
+            _listWeather.first()?.let { _index ->
+                val url = API_IMAGE_BASE_URL.plus(_index.icon.toString()).plus(getString(R.string.imageType))
+                DownloadImage(this).execute(url)
+            }
+        }
+        weatherPanel.visibility = View.VISIBLE
+        progressLoading.visibility = View.GONE
+    }
+
+    override fun sendDownloadedBitmap(bitmap: Bitmap) {
+        imgWeatherIcon.setImageBitmap(bitmap)
     }
 
     private fun showAlertDialogForPermissionDeniedWithCheck() = AlertDialog.Builder(activity!!)

@@ -39,7 +39,7 @@ class AddLocationPresenter(private var context: Context, private var mView: AddL
                 }
             }
         }
-        mView.currentLocationResponse(Coord(currentLongitude, currentLatitude))
+        mView.currentLocationData(Coord(currentLongitude, currentLatitude))
     }
 
     override fun getResponseFromApiByLatLng(latLng: LatLng) {

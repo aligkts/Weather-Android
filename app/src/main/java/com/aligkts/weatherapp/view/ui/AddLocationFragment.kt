@@ -27,11 +27,10 @@ import kotlinx.android.synthetic.main.fragment_add_location.*
 class AddLocationFragment : Fragment(), OnMapReadyCallback, AddLocationContract.view {
 
     lateinit var mGoogleMap: GoogleMap
-    private var currentLat: Double? = 0.0
-    private var currentLng: Double? = 0.0
+    private var currentLat: Double = 0.0
+    private var currentLng: Double = 0.0
     private val db by lazy { DBConnectionManager(activity!!.applicationContext) }
     private val favoritesList by lazy { db.readFavoritesList() }
-    //private val proxy = Proxy(this)
     lateinit var presenter: AddLocationPresenter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -48,50 +47,48 @@ class AddLocationFragment : Fragment(), OnMapReadyCallback, AddLocationContract.
             mapView.onResume()
             mapView.getMapAsync(this)
         }
-
-        edtPlace.setOnKeyListener { v, keyCode, event ->
+        edtPlace.setOnKeyListener { view, keyCode, event ->
             if (keyCode == EditorInfo.IME_ACTION_SEARCH ||
                     keyCode == EditorInfo.IME_ACTION_DONE ||
                     event.action == KeyEvent.ACTION_DOWN &&
                     event.keyCode == KeyEvent.KEYCODE_ENTER
             ) {
                 val searchedLatLng = presenter.findSearchedLocation(edtPlace.text.toString())
-                zoomLocation(mGoogleMap,searchedLatLng,15F)
+                zoomLocation(mGoogleMap, searchedLatLng, 15F)
             }
             false
         }
-
         btnFindPlace.setOnClickListener {
             val searchedLatLng = presenter.findSearchedLocation(edtPlace.text.toString())
-            zoomLocation(mGoogleMap,searchedLatLng,15F)
+            zoomLocation(mGoogleMap, searchedLatLng, 15F)
         }
     }
 
-    override fun currentLocationResponse(coord: Coord) {
-        currentLat = coord.lat
-        currentLng = coord.lon
+    override fun currentLocationData(coord: Coord) {
+        coord.lat?.let {
+            currentLat = it
+        }
+        coord.lon?.let {
+            currentLng = it
+        }
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
         mGoogleMap = googleMap
-        currentLat?.let { _latitude ->
-            currentLng?.let { _longitude ->
-                zoomLocation(mGoogleMap, LatLng(_latitude,_longitude), 15F)
-            }
-        }
+        zoomLocation(mGoogleMap, LatLng(currentLat, currentLng), 15F)
         mGoogleMap.setOnMapLongClickListener {
-            val marker = addMarkerToMap(mGoogleMap, LatLng(it.latitude,it.longitude))
+            val marker = addMarkerToMap(mGoogleMap, LatLng(it.latitude, it.longitude))
             AlertDialog.Builder(activity!!)
                     .setMessage(getString(R.string.alert_messade_add_location))
                     .setCancelable(false)
                     .setNegativeButton(getString(R.string.alert_button_negative)) { dialog, which ->
-                        marker?.let {_marker ->
+                        marker?.let { _marker ->
                             _marker.remove()
                         }
                         dialog.dismiss()
                     }
                     .setPositiveButton(getString(R.string.alert_button_positive)) { dialog, which ->
-                        presenter.getResponseFromApiByLatLng(LatLng(it.latitude,it.longitude))
+                        presenter.getResponseFromApiByLatLng(LatLng(it.latitude, it.longitude))
                     }.show()
         }
         if (favoritesList.size > 0) {
@@ -101,7 +98,7 @@ class AddLocationFragment : Fragment(), OnMapReadyCallback, AddLocationContract.
         }
     }
 
-    private fun addMarkerToMap(mGoogleMap: GoogleMap,latLng: LatLng): Marker? {
+    private fun addMarkerToMap(mGoogleMap: GoogleMap, latLng: LatLng): Marker? {
         val options = MarkerOptions().position(latLng)
         return mGoogleMap.addMarker(options)
     }

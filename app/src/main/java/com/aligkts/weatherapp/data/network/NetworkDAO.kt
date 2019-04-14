@@ -9,7 +9,6 @@ import java.net.URL
 class NetworkDAO : AsyncTask<String, String, String>() {
 
     lateinit var listener: IRequestResult
-
     override fun doInBackground(vararg url: String?): String {
         val text: String
         val connection = URL(url.first()).openConnection() as HttpURLConnection
@@ -27,7 +26,7 @@ class NetworkDAO : AsyncTask<String, String, String>() {
         val responseBody = Gson().fromJson(result,ForecastByLocationResponse::class.java)
         responseBody.list?.let {_list ->
             for (i in 0 until _list.size step 8) {
-                _list.get(i)?.let {_response ->
+                _list[i]?.let { _response ->
                     listener.onSuccess(_response)
                 }
             }

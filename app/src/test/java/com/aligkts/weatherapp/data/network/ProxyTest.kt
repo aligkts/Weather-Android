@@ -24,7 +24,7 @@ class ProxyTest {
        // proxy = Proxy(null)
     }
 
-    @Test
+    /*@Test
     fun getRequestByLocation() {
         val list : List<WeatherItem> = listOf(WeatherItem("04d","broken clouds","Clouds",803))
         val mockedCall: Call<ModelResponse> = mock()
@@ -49,7 +49,7 @@ class ProxyTest {
 
         //verify(view).setUiComponents(mockedResponse)
 
-    }
+    }*/
 
     @Test
     fun getRequestByLocationBookmark() {

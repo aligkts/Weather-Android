@@ -1,6 +1,7 @@
 package com.aligkts.weatherapp.view.ui
 
 
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,35 +10,32 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.aligkts.weatherapp.R
+import com.aligkts.weatherapp.data.IDownloadedImageBitmap
 import com.aligkts.weatherapp.data.dto.weatherbylocation.Clouds
-import com.aligkts.weatherapp.data.dto.weatherbylocation.Coord
 import com.aligkts.weatherapp.data.dto.weatherbylocation.Main
 import com.aligkts.weatherapp.data.dto.weatherbylocation.WeatherItem
 import com.aligkts.weatherapp.data.dto.weatherbylocation.Wind
 import com.aligkts.weatherapp.data.network.IRequestResult
-import com.aligkts.weatherapp.data.network.NetworkDAO
 import com.aligkts.weatherapp.util.DownloadImage
-import com.aligkts.weatherapp.data.SingletonModel
-import com.aligkts.weatherapp.data.network.model.ForecastByLocationResponse
 import com.aligkts.weatherapp.data.network.model.ModelResponse
+import com.aligkts.weatherapp.presenter.DetailContract
+import com.aligkts.weatherapp.presenter.DetailPresenter
+import com.aligkts.weatherapp.util.Constant
 import com.aligkts.weatherapp.view.ui.adapter.DetailAdapter
-import com.aligkts.weatherapp.util.Constant.Companion.API_FORECAST_BASE_URL
-import com.aligkts.weatherapp.util.Constant.Companion.API_IMAGE_BASE_URL
-import com.aligkts.weatherapp.util.Constant.Companion.weatherAppId
-import com.aligkts.weatherapp.util.UnitType
 import com.aligkts.weatherapp.util.tempFormatter
+import com.google.android.gms.maps.model.LatLng
 import kotlinx.android.synthetic.main.fragment_weather_detail.*
 
 
-class WeatherDetailFragment : Fragment(), IRequestResult {
+class WeatherDetailFragment : Fragment(), DetailContract.view, IDownloadedImageBitmap{
 
 
     private var dataList = ModelResponse()
     private var mAdapter = DetailAdapter(ArrayList())
-    private var dataListForecastFromRequest = ArrayList<ModelResponse>()
-    private var responseModel = ForecastByLocationResponse()
+    lateinit var presenter: DetailPresenter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        presenter = DetailPresenter(activity!!, this)
         return inflater.inflate(R.layout.fragment_weather_detail, container, false)
     }
 
@@ -47,28 +45,28 @@ class WeatherDetailFragment : Fragment(), IRequestResult {
         val currentCheck = arguments?.let {
             it.getString("bundle")
         }
-        SingletonModel.instance?.let { _instance ->
-            dataList = if (currentCheck == "current_clicked") {
-                _instance.getCurrentList()
-            } else {
-                _instance.getOtherList()
+        presenter.getSingletonData(currentCheck)?.let {
+            dataList = it
+        }
+        setDetailHeaderComponents(dataList.name,
+                                  dataList.main,
+                                  dataList.clouds,
+                                  dataList.wind,
+                                  dataList.weather)
+        dataList.coord?.let {_coord ->
+            _coord.lat?.let { _lat ->
+                _coord.lon?.let {_lon ->
+                    presenter.getResponseWithoutRetrofitByLatLng(LatLng( _lat,_lon))
+                }
             }
         }
-        setDetailComponents(dataList.name,
-                            dataList.main,
-                            dataList.clouds,
-                            dataList.wind,
-                            dataList.weather,
-                            dataList.coord)
     }
 
-    private fun setDetailComponents(
-        name: String?,
-        main: Main?,
-        clouds: Clouds?,
-        wind: Wind?,
-        weather: List<WeatherItem?>?,
-        coord: Coord?) {
+    private fun setDetailHeaderComponents(name: String?,
+                                          main: Main?,
+                                          clouds: Clouds?,
+                                          wind: Wind?,
+                                          weather: List<WeatherItem?>?) {
         name?.let {
             txtCurrentLocDetail.text = it
         }
@@ -88,25 +86,18 @@ class WeatherDetailFragment : Fragment(), IRequestResult {
         }
         weather?.let { _list ->
             _list.first()?.let {_index ->
-                val weatherStatus = _index.icon.toString()
-                val url = API_IMAGE_BASE_URL.plus(weatherStatus).plus(getString(R.string.imageType))
-                DownloadImage(imgWeatherIconDetail).execute(url)
+                val url = Constant.API_IMAGE_BASE_URL.plus(_index.icon.toString()).plus(getString(R.string.imageType))
+                DownloadImage(this).execute(url)
             }
         }
-        coord?.let { _coord ->
-            val asyncTaskHandleJson = NetworkDAO()
-            asyncTaskHandleJson.listener = this
-            asyncTaskHandleJson.execute(API_FORECAST_BASE_URL + "lat=" + _coord.lat + "&lon=" + _coord.lon + "&&APPID=" + weatherAppId + "&units="+UnitType.Imperial.toString())
-        }
     }
 
-    override fun onSuccess(modelResponse: ModelResponse) {
-        dataListForecastFromRequest.add(modelResponse)
-        setRecyclerAdapter(dataListForecastFromRequest,recyclerDetail)
+    override fun sendDownloadedBitmap(bitmap: Bitmap) {
+        imgWeatherIconDetail.setImageBitmap(bitmap)
     }
 
-    override fun onFailure(t: Throwable) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun getForecastModelResponse(list: ArrayList<ModelResponse>) {
+        setRecyclerAdapter(list,recyclerDetail)
     }
 
     private fun setRecyclerAdapter(list: ArrayList<ModelResponse>, recyclerView: RecyclerView) {

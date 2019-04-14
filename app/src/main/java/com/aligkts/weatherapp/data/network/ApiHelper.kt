@@ -1,6 +1,5 @@
 package com.aligkts.weatherapp.data.network
 
-import com.aligkts.weatherapp.data.network.model.ForecastByLocationResponse
 import com.aligkts.weatherapp.data.network.model.ModelResponse
 import retrofit2.Call
 import retrofit2.http.GET
@@ -13,10 +12,4 @@ interface ApiHelper {
                            @Query("lon") lon: Double?,
                            @Query("APPID") appID: String,
                            @Query("units") units: String): Call<ModelResponse>
-
-    @GET("forecast")
-    fun getForecastByLatLng(@Query("lat") lat: Double?,
-                            @Query("lon") lon: Double?,
-                            @Query("APPID") appID: String,
-                            @Query("units") units: String): Call<ForecastByLocationResponse>
 }

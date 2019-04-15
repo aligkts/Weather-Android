@@ -24,4 +24,5 @@ class DownloadImage(var listener: IDownloadedImageBitmap) : AsyncTask<String, Vo
     override fun onPostExecute(result: Bitmap) {
         listener.sendDownloadedBitmap(result)
     }
+
 }

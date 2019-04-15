@@ -9,11 +9,9 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
@@ -22,28 +20,24 @@ import androidx.recyclerview.widget.RecyclerView
 import com.aligkts.weatherapp.R
 import com.aligkts.weatherapp.data.IDownloadedImageBitmap
 import com.aligkts.weatherapp.data.dto.weatherbylocation.Coord
-import com.aligkts.weatherapp.data.network.IRequestResult
 import com.aligkts.weatherapp.util.DownloadImage
 import com.aligkts.weatherapp.data.INotifyRecycler
 import com.aligkts.weatherapp.data.SingletonModel
-import com.aligkts.weatherapp.data.network.Proxy
 import com.aligkts.weatherapp.data.network.model.ModelResponse
 import com.aligkts.weatherapp.presenter.MainContract
 import com.aligkts.weatherapp.presenter.MainPresenter
 import com.aligkts.weatherapp.view.ui.adapter.FavoritesAdapter
 import com.aligkts.weatherapp.util.Constant.Companion.API_IMAGE_BASE_URL
 import com.aligkts.weatherapp.util.tempFormatter
-import com.aligkts.weatherapp.util.toast
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.android.synthetic.main.fragment_main.*
 
-class MainFragment : Fragment(), INotifyRecycler, IRequestResult, MainContract.view, IDownloadedImageBitmap {
+class MainFragment : Fragment(), INotifyRecycler, MainContract.View, IDownloadedImageBitmap {
 
     private val LOCATION_REQUEST_CODE = 101
     private var permissions = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
     private var dataListFavoritesFromRequest = ArrayList<ModelResponse>()
     private var mAdapter = FavoritesAdapter(ArrayList(),this)
-    private val proxy = Proxy(this)
     private lateinit var presenter: MainPresenter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -101,7 +95,7 @@ class MainFragment : Fragment(), INotifyRecycler, IRequestResult, MainContract.v
     override fun findUserLocation(coord: Coord) {
         coord.lat?.let { _latitude ->
             coord.lon?.let { _longitude ->
-                proxy.getRequestByLocation(LatLng(_latitude, _longitude))
+                presenter.getLatLngResponse(LatLng(_latitude, _longitude))
             }
         }
     }
@@ -119,12 +113,8 @@ class MainFragment : Fragment(), INotifyRecycler, IRequestResult, MainContract.v
         mAdapter.notifyDataSetChanged()
     }
 
-    override fun onSuccess(modelResponse: ModelResponse) {
+    override fun getCurrentParsedModel(modelResponse: ModelResponse) {
         setCurrentUiComponents(modelResponse)
-    }
-
-    override fun onFailure(t: Throwable) {
-        t.localizedMessage toast (activity!!)
     }
 
     private fun setCurrentUiComponents(response: ModelResponse) {
@@ -135,8 +125,8 @@ class MainFragment : Fragment(), INotifyRecycler, IRequestResult, MainContract.v
         txtCurrentLocation.text = location
         response.main?.let { _main ->
             val temp = _main.temp
-            temp?.let {
-                txtCurrentTemp.text = it.tempFormatter()
+            temp?.let { _temp ->
+                txtCurrentTemp.text = _temp.tempFormatter()
             }
         }
         response.weather?.let { _listWeather ->

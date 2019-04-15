@@ -13,6 +13,7 @@ import com.aligkts.weatherapp.data.network.model.ModelResponse
 import com.aligkts.weatherapp.util.Constant.Companion.API_IMAGE_BASE_URL
 import com.aligkts.weatherapp.util.DownloadImage
 import com.aligkts.weatherapp.util.dateDoDay
+import com.aligkts.weatherapp.util.tempFormatter
 import java.text.SimpleDateFormat
 
 class DetailViewHolder(viewGroup: ViewGroup) :
@@ -27,13 +28,15 @@ class DetailViewHolder(viewGroup: ViewGroup) :
     private val imgBookmarkItem by lazy { itemView.findViewById<ImageView>(R.id.imgBookmarkItem) }
 
     fun bindTo(context: Context, model: ModelResponse) {
-        model.dt_txt?.let {_datetime ->
+        model.dt_txt?.let { _datetime ->
             txtItemTitle.text = _datetime.dateDoDay()
         }
-        model.main?.let {
-            txtItemTemp.text = tempFormatter(it.temp)
+        model.main?.let { _main ->
+            _main.temp?.let {_temp ->
+                txtItemTemp.text = _temp.tempFormatter()
+            }
         }
-        model.weather?.let {_list ->
+        model.weather?.let { _list ->
             _list.first()?.let {_index ->
                 val weatherStatus = _index.icon.toString()
                 val url =API_IMAGE_BASE_URL.plus(weatherStatus).plus(context.getString(R.string.imageType))
@@ -46,12 +49,4 @@ class DetailViewHolder(viewGroup: ViewGroup) :
         imgBookmarkItem.setImageBitmap(bitmap)
     }
 
-    private fun tempFormatter(temp: Double?): String? {
-        temp?.let {
-            var centi = (temp.toInt().minus(32)).div(1.8000)
-            centi = Math.round(centi).toDouble()
-            return centi.toString() + 0x00B0.toChar()
-        }
-        return null
-    }
 }

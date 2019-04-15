@@ -15,7 +15,6 @@ import com.aligkts.weatherapp.data.dto.weatherbylocation.Clouds
 import com.aligkts.weatherapp.data.dto.weatherbylocation.Main
 import com.aligkts.weatherapp.data.dto.weatherbylocation.WeatherItem
 import com.aligkts.weatherapp.data.dto.weatherbylocation.Wind
-import com.aligkts.weatherapp.data.network.IRequestResult
 import com.aligkts.weatherapp.util.DownloadImage
 import com.aligkts.weatherapp.data.network.model.ModelResponse
 import com.aligkts.weatherapp.presenter.DetailContract
@@ -27,14 +26,14 @@ import com.google.android.gms.maps.model.LatLng
 import kotlinx.android.synthetic.main.fragment_weather_detail.*
 
 
-class WeatherDetailFragment : Fragment(), DetailContract.view, IDownloadedImageBitmap{
+class WeatherDetailFragment : Fragment(), DetailContract.View, IDownloadedImageBitmap{
 
     private var dataList = ModelResponse()
     private var mAdapter = DetailAdapter(ArrayList())
     lateinit var presenter: DetailPresenter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        presenter = DetailPresenter(activity!!, this)
+        presenter = DetailPresenter(this)
         return inflater.inflate(R.layout.fragment_weather_detail, container, false)
     }
 
@@ -51,10 +50,10 @@ class WeatherDetailFragment : Fragment(), DetailContract.view, IDownloadedImageB
                                   dataList.clouds,
                                   dataList.wind,
                                   dataList.weather)
-        dataList.coord?.let {_coord ->
+        dataList.coord?.let { _coord ->
             _coord.lat?.let { _lat ->
-                _coord.lon?.let {_lon ->
-                    presenter.getResponseWithoutRetrofitByLatLng(LatLng( _lat,_lon))
+                _coord.lon?.let { _lon ->
+                    presenter.getResponseWithoutRetrofitByLatLng(LatLng(_lat, _lon))
                 }
             }
         }
@@ -65,11 +64,11 @@ class WeatherDetailFragment : Fragment(), DetailContract.view, IDownloadedImageB
                                           clouds: Clouds?,
                                           wind: Wind?,
                                           weather: List<WeatherItem?>?) {
-        name?.let {
-            txtCurrentLocDetail.text = it
+        name?.let { _name ->
+            txtCurrentLocDetail.text = _name
         }
-        main?.let {_main ->
-            txtCurrentTempDetail.text = _main.temp?.let {_temp ->
+        main?.let { _main ->
+            txtCurrentTempDetail.text = _main.temp?.let { _temp ->
                 _temp.tempFormatter()
             }
             txtHumidity.text = _main.humidity.toString()
@@ -83,7 +82,7 @@ class WeatherDetailFragment : Fragment(), DetailContract.view, IDownloadedImageB
             }
         }
         weather?.let { _list ->
-            _list.first()?.let {_index ->
+            _list.first()?.let { _index ->
                 val url = Constant.API_IMAGE_BASE_URL.plus(_index.icon.toString()).plus(getString(R.string.imageType))
                 DownloadImage(this).execute(url)
             }
@@ -105,4 +104,5 @@ class WeatherDetailFragment : Fragment(), DetailContract.view, IDownloadedImageB
             mAdapter.setNewList(list)
         }
     }
+
 }

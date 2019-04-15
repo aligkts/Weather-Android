@@ -3,15 +3,11 @@ package com.aligkts.weatherapp.presenter
 import android.content.Context
 import android.location.Address
 import android.location.Geocoder
-import android.util.Log
-import android.view.View
-import android.widget.Toast
 import com.aligkts.weatherapp.R
 import com.aligkts.weatherapp.data.SingletonModel
 import com.aligkts.weatherapp.data.database.DBConnectionManager
 import com.aligkts.weatherapp.data.database.model.FavoriteLocation
 import com.aligkts.weatherapp.data.dto.weatherbylocation.Coord
-import com.aligkts.weatherapp.data.network.IRequestResult
 import com.aligkts.weatherapp.data.network.Proxy
 import com.aligkts.weatherapp.data.network.model.ModelResponse
 import com.aligkts.weatherapp.util.toast
@@ -19,11 +15,10 @@ import com.aligkts.weatherapp.view.ui.MainActivity
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.maps.model.LatLng
-import kotlinx.android.synthetic.main.fragment_add_location.*
 
-class AddLocationPresenter(private var context: Context, private var mView: AddLocationContract.view) : AddLocationContract.presenter ,IRequestResult{
+class AddLocationPresenter(private var context: Context, private var mView: AddLocationContract.View) : AddLocationContract.Presenter{
 
-    private val proxy by lazy { Proxy(this) }
+    private val proxy by lazy { Proxy() }
     private val db by lazy { DBConnectionManager(context) }
 
     override fun getCurrentSingletonData() {
@@ -43,28 +38,25 @@ class AddLocationPresenter(private var context: Context, private var mView: AddL
     }
 
     override fun getResponseFromApiByLatLng(latLng: LatLng) {
-        proxy.getRequestByLocation(latLng)
-    }
-
-    override fun onSuccess(modelResponse: ModelResponse) {
-            val dbModel = FavoriteLocation()
-            modelResponse.id?.let {_id ->
-                dbModel.id = _id
-            }
-            modelResponse.coord?.let {_coord ->
-                _coord.lat?.let {_latitude ->
-                    dbModel.latitude = _latitude
+        proxy.getResponseFromApiByLatLng(latLng) {isSuccess, response ->
+            if (isSuccess) {
+                response?.let { _response ->
+                    val dbModel = FavoriteLocation()
+                    _response.id?.let { _id ->
+                        dbModel.id = _id
+                    }
+                    _response.coord?.let { _coord ->
+                        _coord.lat?.let { _latitude ->
+                            dbModel.latitude = _latitude
+                        }
+                        _coord.lon?.let { _longitude ->
+                            dbModel.longitude = _longitude
+                        }
+                    }
+                    db.insertData(dbModel)
                 }
-                _coord.lon?.let {_longitude ->
-                    dbModel.longitude = _longitude
-                }
             }
-            db.insertData(dbModel)
-
-    }
-
-    override fun onFailure(t: Throwable) {
-        t.localizedMessage toast (context)
+        }
     }
 
     override fun checkWhetherGoogleServicesAvailable(): Boolean {

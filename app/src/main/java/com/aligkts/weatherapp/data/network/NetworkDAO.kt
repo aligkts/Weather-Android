@@ -2,6 +2,7 @@ package com.aligkts.weatherapp.data.network
 
 import android.os.AsyncTask
 import com.aligkts.weatherapp.data.network.model.ForecastByLocationResponse
+import com.aligkts.weatherapp.presenter.DetailContract
 import com.google.gson.Gson
 import java.net.HttpURLConnection
 import java.net.URL
@@ -12,7 +13,7 @@ import java.net.URL
 
 class NetworkDAO : AsyncTask<String, String, String>() {
 
-    lateinit var listener: IRequestResult
+    lateinit var listener: DetailContract.Presenter
 
     override fun doInBackground(vararg url: String?): String {
         val text: String
@@ -32,7 +33,7 @@ class NetworkDAO : AsyncTask<String, String, String>() {
         responseBody.list?.let {_list ->
             for (i in 0 until _list.size step 8) {
                 _list[i]?.let { _response ->
-                    listener.onSuccess(_response)
+                    listener.presentedForecast(_response)
                 }
             }
         }

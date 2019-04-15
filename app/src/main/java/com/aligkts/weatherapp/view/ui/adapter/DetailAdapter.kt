@@ -22,4 +22,5 @@ class DetailAdapter(var itemList: List<ModelResponse>) : RecyclerView.Adapter<De
         this.itemList = itemList
         notifyDataSetChanged()
     }
+
 }

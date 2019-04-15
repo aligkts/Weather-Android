@@ -12,7 +12,7 @@ import com.aligkts.weatherapp.data.database.model.FavoriteLocation
  */
 
 class DBConnectionManager(val context: Context) :
-    SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
+      SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
     private val TABLE_NAME = context.getString(R.string.table_name)
     private val COL_ID = context.getString(R.string.column_id)
@@ -68,4 +68,5 @@ class DBConnectionManager(val context: Context) :
         sqliteDB.execSQL(query)
         sqliteDB.close()
     }
+
 }

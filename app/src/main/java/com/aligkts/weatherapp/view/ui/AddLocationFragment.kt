@@ -11,7 +11,9 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.aligkts.weatherapp.R
 import com.aligkts.weatherapp.data.database.DBConnectionManager
+import com.aligkts.weatherapp.data.database.model.FavoriteLocation
 import com.aligkts.weatherapp.data.dto.weatherbylocation.Coord
+import com.aligkts.weatherapp.data.network.model.ModelResponse
 import com.aligkts.weatherapp.presenter.AddLocationPresenter
 import com.aligkts.weatherapp.presenter.AddLocationContract
 import com.aligkts.weatherapp.util.hideKeyboard
@@ -24,7 +26,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.android.synthetic.main.fragment_add_location.*
 
 
-class AddLocationFragment : Fragment(), OnMapReadyCallback, AddLocationContract.view {
+class AddLocationFragment : Fragment(), OnMapReadyCallback, AddLocationContract.View {
 
     lateinit var mGoogleMap: GoogleMap
     private var currentLat: Double = 0.0
@@ -65,11 +67,11 @@ class AddLocationFragment : Fragment(), OnMapReadyCallback, AddLocationContract.
     }
 
     override fun currentLocationData(coord: Coord) {
-        coord.lat?.let {
-            currentLat = it
+        coord.lat?.let { _latitude ->
+            currentLat = _latitude
         }
-        coord.lon?.let {
-            currentLng = it
+        coord.lon?.let { _longitude ->
+            currentLng = _longitude
         }
     }
 

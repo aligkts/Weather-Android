@@ -1,10 +1,9 @@
 package com.aligkts.weatherapp.presenter
 
 import android.os.Bundle
-import android.view.View
-import androidx.fragment.app.FragmentActivity
 import com.aligkts.weatherapp.data.dto.weatherbylocation.Coord
 import com.aligkts.weatherapp.data.network.model.ModelResponse
+import com.google.android.gms.maps.model.LatLng
 
 /**
  * Define the contract between MainFragment and MainPresenter
@@ -13,15 +12,18 @@ import com.aligkts.weatherapp.data.network.model.ModelResponse
 
 interface MainContract {
 
-    interface view {
+    interface View {
         fun findUserLocation(coord: Coord)
         fun currentWeatherClicked(bundle: Bundle)
         fun bookmarkList(list: ArrayList<ModelResponse>)
+        fun getCurrentParsedModel(modelResponse: ModelResponse)
     }
 
-    interface presenter {
+    interface Presenter {
         fun getCurrentLocationCoordFromUser()
         fun navigateToWeatherDetail()
         fun getBookmarkListFromDb()
+        fun getLatLngResponse(latLng: LatLng)
     }
+
 }

@@ -40,4 +40,5 @@ class SingletonModel private constructor() {
     fun getOtherList(): ModelResponse {
         return this.dataList
     }
+
 }

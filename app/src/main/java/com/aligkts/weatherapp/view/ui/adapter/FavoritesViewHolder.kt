@@ -63,4 +63,5 @@ class FavoritesViewHolder(viewGroup: ViewGroup) :
     override fun sendDownloadedBitmap(bitmap: Bitmap) {
         imgBookmarkItem.setImageBitmap(bitmap)
     }
+
 }

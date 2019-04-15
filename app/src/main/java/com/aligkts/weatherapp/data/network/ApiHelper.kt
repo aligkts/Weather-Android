@@ -16,4 +16,5 @@ interface ApiHelper {
                            @Query("lon") lon: Double?,
                            @Query("APPID") appID: String,
                            @Query("units") units: String): Call<ModelResponse>
+
 }

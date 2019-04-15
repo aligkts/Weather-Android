@@ -18,5 +18,6 @@ class RetrofitClient {
                 .build()
         }
     }
+
 }
 

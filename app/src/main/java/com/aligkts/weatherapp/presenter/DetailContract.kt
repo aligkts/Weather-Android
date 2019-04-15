@@ -9,12 +9,14 @@ import com.google.android.gms.maps.model.LatLng
 
 interface DetailContract {
 
-    interface view {
+    interface View {
         fun getForecastModelResponse(list: ArrayList<ModelResponse>)
     }
 
-    interface presenter {
+    interface Presenter {
         fun getSingletonData(currentCheck: String?) : ModelResponse?
         fun getResponseWithoutRetrofitByLatLng(latLng: LatLng)
+        fun presentedForecast(modelResponse: ModelResponse)
     }
+
 }

@@ -29,7 +29,6 @@ import kotlinx.android.synthetic.main.fragment_weather_detail.*
 
 class WeatherDetailFragment : Fragment(), DetailContract.view, IDownloadedImageBitmap{
 
-
     private var dataList = ModelResponse()
     private var mAdapter = DetailAdapter(ArrayList())
     lateinit var presenter: DetailPresenter
@@ -41,7 +40,6 @@ class WeatherDetailFragment : Fragment(), DetailContract.view, IDownloadedImageB
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         val currentCheck = arguments?.let {
             it.getString("bundle")
         }

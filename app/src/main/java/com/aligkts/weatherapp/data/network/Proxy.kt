@@ -7,6 +7,10 @@ import com.google.android.gms.maps.model.LatLng
 import retrofit2.Call
 import retrofit2.Response
 
+/**
+ * Retrofit request class
+ */
+
 class Proxy(var listenerRequestResult: IRequestResult) {
 
     lateinit var parsedModel: ModelResponse
@@ -17,39 +21,33 @@ class Proxy(var listenerRequestResult: IRequestResult) {
                 .getWeatherByLatLng(latLng.latitude, latLng.longitude, weatherAppId, UnitType.Imperial.toString())
                 .enqueue(object : retrofit2.Callback<ModelResponse> {
                     override fun onFailure(call: Call<ModelResponse>, t: Throwable) {
-                        listenerRequestResult?.let {
-                            it.onFailure(t)
-                        }
+                        listenerRequestResult.onFailure(t)
                     }
 
                     override fun onResponse(call: Call<ModelResponse>, response: Response<ModelResponse>) {
                         response.body()?.let {
                             parsedModel = it
                         }
-                        listenerRequestResult?.let {
-                            it.onSuccess(parsedModel)
-                        }
+                        listenerRequestResult.onSuccess(parsedModel)
                     }
                 })
     }
 
-    fun getRequestByLocationBookmark(lat: Double,
-                                     lon: Double) {
+    fun getRequestByLocationBookmark(latitude: Double,
+                                     longitude: Double) {
         RetrofitClient.getApi()
                 .create(ApiHelper::class.java)
-                .getWeatherByLatLng(lat, lon, weatherAppId, UnitType.Imperial.toString())
+                .getWeatherByLatLng(latitude, longitude, weatherAppId, UnitType.Imperial.toString())
                 .enqueue(object : retrofit2.Callback<ModelResponse> {
                     override fun onFailure(call: Call<ModelResponse>, t: Throwable) {
+                        listenerRequestResult.onFailure(t)
                     }
 
                     override fun onResponse(call: Call<ModelResponse>, response: Response<ModelResponse>) {
                         response.body()?.let {
                             parsedModel = it
                         }
-                        listenerRequestResult?.let {
-                            it.onSuccess(parsedModel)
-                        }
-
+                        listenerRequestResult.onSuccess(parsedModel)
                     }
                 })
     }

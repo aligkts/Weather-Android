@@ -4,6 +4,10 @@ import com.aligkts.weatherapp.util.Constant.Companion.baseUrl
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
+/**
+ * Retrofit base
+ */
+
 class RetrofitClient {
 
     companion object {

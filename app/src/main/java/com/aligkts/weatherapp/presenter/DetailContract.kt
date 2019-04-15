@@ -7,7 +7,6 @@ import com.google.android.gms.maps.model.LatLng
  * Define the contract between WeatherDetailFragment and DetailPresenter
  */
 
-
 interface DetailContract {
 
     interface view {
@@ -18,7 +17,4 @@ interface DetailContract {
         fun getSingletonData(currentCheck: String?) : ModelResponse?
         fun getResponseWithoutRetrofitByLatLng(latLng: LatLng)
     }
-
-
-
 }

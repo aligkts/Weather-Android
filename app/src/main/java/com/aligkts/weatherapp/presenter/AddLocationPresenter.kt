@@ -14,6 +14,7 @@ import com.aligkts.weatherapp.data.dto.weatherbylocation.Coord
 import com.aligkts.weatherapp.data.network.IRequestResult
 import com.aligkts.weatherapp.data.network.Proxy
 import com.aligkts.weatherapp.data.network.model.ModelResponse
+import com.aligkts.weatherapp.util.toast
 import com.aligkts.weatherapp.view.ui.MainActivity
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
@@ -21,7 +22,6 @@ import com.google.android.gms.maps.model.LatLng
 import kotlinx.android.synthetic.main.fragment_add_location.*
 
 class AddLocationPresenter(private var context: Context, private var mView: AddLocationContract.view) : AddLocationContract.presenter ,IRequestResult{
-
 
     private val proxy by lazy { Proxy(this) }
     private val db by lazy { DBConnectionManager(context) }
@@ -47,7 +47,6 @@ class AddLocationPresenter(private var context: Context, private var mView: AddL
     }
 
     override fun onSuccess(modelResponse: ModelResponse) {
-        modelResponse?.let {_model ->
             val dbModel = FavoriteLocation()
             modelResponse.id?.let {_id ->
                 dbModel.id = _id
@@ -61,11 +60,11 @@ class AddLocationPresenter(private var context: Context, private var mView: AddL
                 }
             }
             db.insertData(dbModel)
-        }
+
     }
 
     override fun onFailure(t: Throwable) {
-        Log.e("API","Request failed".plus(t.localizedMessage))
+        t.localizedMessage toast (context)
     }
 
     override fun checkWhetherGoogleServicesAvailable(): Boolean {
@@ -77,7 +76,7 @@ class AddLocationPresenter(private var context: Context, private var mView: AddL
                 val dialog = api.getErrorDialog(MainActivity(), isAvailable, 0)
                 dialog.show()
             }
-            else -> Toast.makeText(context, context.getString(R.string.warning_play_services), Toast.LENGTH_SHORT).show()
+            else -> context.getString(R.string.warning_play_services) toast (context)
         }
         return false
     }

@@ -1,7 +1,8 @@
 package com.aligkts.weatherapp.presenter
 
 import android.os.Bundle
-import com.aligkts.weatherapp.data.database.model.FavoriteLocation
+import android.view.View
+import androidx.fragment.app.FragmentActivity
 import com.aligkts.weatherapp.data.dto.weatherbylocation.Coord
 import com.aligkts.weatherapp.data.network.model.ModelResponse
 

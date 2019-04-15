@@ -6,13 +6,14 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
@@ -20,8 +21,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.aligkts.weatherapp.R
 import com.aligkts.weatherapp.data.IDownloadedImageBitmap
-import com.aligkts.weatherapp.data.database.DBConnectionManager
-import com.aligkts.weatherapp.data.database.model.FavoriteLocation
 import com.aligkts.weatherapp.data.dto.weatherbylocation.Coord
 import com.aligkts.weatherapp.data.network.IRequestResult
 import com.aligkts.weatherapp.util.DownloadImage
@@ -33,14 +32,15 @@ import com.aligkts.weatherapp.presenter.MainContract
 import com.aligkts.weatherapp.presenter.MainPresenter
 import com.aligkts.weatherapp.view.ui.adapter.FavoritesAdapter
 import com.aligkts.weatherapp.util.Constant.Companion.API_IMAGE_BASE_URL
+import com.aligkts.weatherapp.util.tempFormatter
+import com.aligkts.weatherapp.util.toast
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.android.synthetic.main.fragment_main.*
 
 class MainFragment : Fragment(), INotifyRecycler, IRequestResult, MainContract.view, IDownloadedImageBitmap {
 
     private val LOCATION_REQUEST_CODE = 101
-    private var permissions =
-        arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+    private var permissions = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
     private var dataListFavoritesFromRequest = ArrayList<ModelResponse>()
     private var mAdapter = FavoritesAdapter(ArrayList(),this)
     private val proxy = Proxy(this)
@@ -49,19 +49,19 @@ class MainFragment : Fragment(), INotifyRecycler, IRequestResult, MainContract.v
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         presenter = MainPresenter(activity!!.applicationContext, this)
         dataListFavoritesFromRequest.clear()
+        presenter.getBookmarkListFromDb()
+        return inflater.inflate(R.layout.fragment_main, container, false)
+    }
 
-        if (ContextCompat.checkSelfPermission(
-                activity!!,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
+    override fun onStart() {
+        super.onStart()
+        if (ContextCompat.checkSelfPermission(activity!!,
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(permissions, LOCATION_REQUEST_CODE)
         } else {
             // Permission has already been granted
             presenter.getCurrentLocationCoordFromUser()
         }
-        presenter.getBookmarkListFromDb()
-        return inflater.inflate(R.layout.fragment_main, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -124,7 +124,7 @@ class MainFragment : Fragment(), INotifyRecycler, IRequestResult, MainContract.v
     }
 
     override fun onFailure(t: Throwable) {
-
+        t.localizedMessage toast (activity!!)
     }
 
     private fun setCurrentUiComponents(response: ModelResponse) {
@@ -136,9 +136,7 @@ class MainFragment : Fragment(), INotifyRecycler, IRequestResult, MainContract.v
         response.main?.let { _main ->
             val temp = _main.temp
             temp?.let {
-                var centi = (temp.toInt().minus(32)).div(1.8000)
-                centi = Math.round(centi).toDouble()
-                txtCurrentTemp.text = centi.toString() + 0x00B0.toChar()
+                txtCurrentTemp.text = it.tempFormatter()
             }
         }
         response.weather?.let { _listWeather ->
@@ -163,19 +161,18 @@ class MainFragment : Fragment(), INotifyRecycler, IRequestResult, MainContract.v
             val uri = Uri.fromParts(getString(R.string.scheme), activity!!.packageName, null)
             intent.data = uri
             context?.startActivity(intent)
-        }.setCancelable(false).create().show()
+        }.setNegativeButton(getString(R.string.exit)) { dialog, which ->
+            activity!!.finish()
+        }.setCancelable(false).show()
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         when (requestCode) {
             LOCATION_REQUEST_CODE -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    //getCurrentWeatherFromApi(findLocation())
+                    presenter.getCurrentLocationCoordFromUser()
                 } else if (!shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) ||
-                    !shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION)
-                ) {
+                           !shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION)) {
                     showAlertDialogForPermissionDeniedWithCheck()
-                } else {
-
                 }
             }
             else -> {

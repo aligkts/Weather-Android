@@ -6,7 +6,5 @@ class Constant {
         val baseUrl = "https://api.openweathermap.org/data/2.5/"
         val API_IMAGE_BASE_URL = "http://openweathermap.org/img/w/"
         val API_FORECAST_BASE_URL = "http://api.openweathermap.org/data/2.5/forecast?"
-
     }
-
 }

@@ -12,6 +12,7 @@ import com.aligkts.weatherapp.data.IDownloadedImageBitmap
 import com.aligkts.weatherapp.data.network.model.ModelResponse
 import com.aligkts.weatherapp.util.Constant.Companion.API_IMAGE_BASE_URL
 import com.aligkts.weatherapp.util.DownloadImage
+import com.aligkts.weatherapp.util.dateDoDay
 import java.text.SimpleDateFormat
 
 class DetailViewHolder(viewGroup: ViewGroup) :
@@ -26,7 +27,9 @@ class DetailViewHolder(viewGroup: ViewGroup) :
     private val imgBookmarkItem by lazy { itemView.findViewById<ImageView>(R.id.imgBookmarkItem) }
 
     fun bindTo(context: Context, model: ModelResponse) {
-        txtItemTitle.text = dateToDay(model.dt_txt)
+        model.dt_txt?.let {_datetime ->
+            txtItemTitle.text = _datetime.dateDoDay()
+        }
         model.main?.let {
             txtItemTemp.text = tempFormatter(it.temp)
         }
@@ -38,6 +41,7 @@ class DetailViewHolder(viewGroup: ViewGroup) :
             }
         }
     }
+
     override fun sendDownloadedBitmap(bitmap: Bitmap) {
         imgBookmarkItem.setImageBitmap(bitmap)
     }
@@ -49,13 +53,5 @@ class DetailViewHolder(viewGroup: ViewGroup) :
             return centi.toString() + 0x00B0.toChar()
         }
         return null
-    }
-
-    private fun dateToDay(input: String?): String {
-        val inFormat = SimpleDateFormat("yyy-MM-dd")
-        val date = inFormat.parse(input)
-        val outFormat = SimpleDateFormat("EEEE")
-        val day = outFormat.format(date)
-        return day
     }
 }

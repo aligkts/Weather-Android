@@ -9,6 +9,7 @@ import com.aligkts.weatherapp.data.network.model.ModelResponse
 import com.aligkts.weatherapp.util.Constant.Companion.API_FORECAST_BASE_URL
 import com.aligkts.weatherapp.util.Constant.Companion.weatherAppId
 import com.aligkts.weatherapp.util.UnitType
+import com.aligkts.weatherapp.util.toast
 import com.google.android.gms.maps.model.LatLng
 
 class DetailPresenter(private var context: Context, private var mView: DetailContract.view) : DetailContract.presenter, IRequestResult{
@@ -42,6 +43,6 @@ class DetailPresenter(private var context: Context, private var mView: DetailCon
     }
 
     override fun onFailure(t: Throwable) {
-        Log.e("API","Request failed".plus(t.localizedMessage))
+        t.localizedMessage toast (context)
     }
 }

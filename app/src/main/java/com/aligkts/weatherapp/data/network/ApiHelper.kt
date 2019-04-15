@@ -5,6 +5,10 @@ import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
 
+/**
+ * Api url dynamic values
+ */
+
 interface ApiHelper {
 
     @GET("weather")

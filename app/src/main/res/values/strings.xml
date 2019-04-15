@@ -19,5 +19,6 @@
     <string name="scheme">package</string>
     <string name="imageType">.png</string>
     <string name="alert_message_delete_location">Bu lokasyonu silmek istediğinize emin misiniz?</string>
+    <string name="exit">Çıkış</string>
 
 </resources>

@@ -4,7 +4,6 @@ import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Bitmap
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
@@ -17,7 +16,6 @@ import com.aligkts.weatherapp.data.network.model.ModelResponse
 import com.aligkts.weatherapp.util.DownloadImage
 import com.aligkts.weatherapp.data.INotifyRecycler
 import com.aligkts.weatherapp.data.SingletonModel
-import com.aligkts.weatherapp.presenter.MainContract
 import com.aligkts.weatherapp.util.Constant.Companion.API_IMAGE_BASE_URL
 import com.aligkts.weatherapp.util.tempFormatter
 
@@ -61,6 +59,7 @@ class FavoritesViewHolder(viewGroup: ViewGroup) :
             Navigation.findNavController(it).navigate(R.id.weatherDetailFragment)
         }
     }
+
     override fun sendDownloadedBitmap(bitmap: Bitmap) {
         imgBookmarkItem.setImageBitmap(bitmap)
     }

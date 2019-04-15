@@ -2,6 +2,10 @@ package com.aligkts.weatherapp.data
 
 import com.aligkts.weatherapp.data.network.model.ModelResponse
 
+/**
+ * Access data from everywhere
+ */
+
 class SingletonModel private constructor() {
 
     var dataList = ModelResponse()

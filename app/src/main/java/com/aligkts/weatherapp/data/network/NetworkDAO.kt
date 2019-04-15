@@ -6,9 +6,14 @@ import com.google.gson.Gson
 import java.net.HttpURLConnection
 import java.net.URL
 
+/**
+ * Request without any third party library
+ */
+
 class NetworkDAO : AsyncTask<String, String, String>() {
 
     lateinit var listener: IRequestResult
+
     override fun doInBackground(vararg url: String?): String {
         val text: String
         val connection = URL(url.first()).openConnection() as HttpURLConnection

@@ -1,5 +1,6 @@
 package com.aligkts.weatherapp.util
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -25,6 +26,7 @@ infix fun String.toast(context: Context) {
     Toast.makeText(context, this, Toast.LENGTH_SHORT).show()
 }
 
+@SuppressLint("SimpleDateFormat")
 fun String.dateDoDay(): String {
     val inFormat = SimpleDateFormat("yyy-MM-dd")
     val date = inFormat.parse(this)

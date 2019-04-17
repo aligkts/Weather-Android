@@ -9,11 +9,11 @@
 
     <TextView
         android:id="@+id/txtItemTitle"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_margin="8dp"
         android:layout_weight="1"
-        android:text="Dufresne"
+        android:text="@string/dummy_item_title"
         android:textColor="@android:color/black" />
 
 
@@ -22,7 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_margin="8dp"
-        android:text="14 C"
+        android:text="@string/dummy_current_temp"
         android:textColor="@android:color/black" />
 
     <ImageView
@@ -31,7 +31,8 @@
         android:layout_height="match_parent"
         android:minWidth="30dp"
         android:minHeight="30dp"
-        android:layout_margin="8dp"/>
+        android:layout_margin="8dp"
+        android:contentDescription="@string/contentDescriptionContent"/>
 
 
 </LinearLayout>

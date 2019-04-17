@@ -20,7 +20,7 @@ class DBConnectionManager(val context: Context) :
     private val COL_LON = context.getString(R.string.column_lon)
 
     companion object {
-        private val DATABASE_NAME = "WEATHER_DATABASE"//database adı
+        private val DATABASE_NAME = "WEATHER_DATABASE"
         private val DATABASE_VERSION = 1
     }
 

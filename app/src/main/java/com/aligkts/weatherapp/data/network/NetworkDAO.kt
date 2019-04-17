@@ -38,4 +38,5 @@ class NetworkDAO : AsyncTask<String, String, String>() {
             }
         }
     }
+
 }

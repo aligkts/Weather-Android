@@ -16,10 +16,10 @@ import com.aligkts.weatherapp.util.toast
 import com.google.android.gms.maps.model.LatLng
 
 /**
- * Responsible for handling actions from the MainFragment and updating the UI as required
+ * Responsible for handling actions from the MainFragment and updating the UI
  */
 
-class MainPresenter(private var context: Context,private var mView: MainContract.View) : MainContract.Presenter{
+class MainPresenter(private var context: Context,private var mView: MainContract.View) : MainContract.Presenter {
 
     private val db by lazy { DBConnectionManager(context) }
     private val proxy by lazy { Proxy() }
@@ -72,11 +72,14 @@ class MainPresenter(private var context: Context,private var mView: MainContract
         val bookmarkList = db.readFavoritesList()
         if (bookmarkList.size > 0) {
             for (i in 0 until bookmarkList.size) {
-                proxy.getResponseFromApiByLatLng(LatLng(bookmarkList[i].latitude, bookmarkList[i].longitude)) {isSuccess, response ->
+                proxy.getResponseFromApiByLatLng(LatLng(bookmarkList[i].latitude, bookmarkList[i].longitude)) {isSuccess, response, message ->
                     if (isSuccess) {
                         response?.let { _response ->
                             dataListFavoritesFromRequest.add(_response)
                         }
+                    }
+                    else {
+                        message.toString() toast (context)
                     }
                 }
             }
@@ -84,13 +87,15 @@ class MainPresenter(private var context: Context,private var mView: MainContract
     }
 
     override fun getLatLngResponse(latLng: LatLng) {
-        proxy.getResponseFromApiByLatLng(latLng) {isSuccess, response ->
+        proxy.getResponseFromApiByLatLng(latLng) {isSuccess, response, message ->
             if (isSuccess) {
                 response?.let { _response ->
                     mView.getCurrentParsedModel( _response)
                     mView.bookmarkList(dataListFavoritesFromRequest)
-
                 }
+            }
+            else {
+                message.toString() toast (context)
             }
         }
     }

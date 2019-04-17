@@ -12,7 +12,7 @@ import com.google.android.gms.maps.model.LatLng
 
 interface MainContract {
 
-    interface View {
+    interface View  {
         fun findUserLocation(coord: Coord)
         fun currentWeatherClicked(bundle: Bundle)
         fun bookmarkList(list: ArrayList<ModelResponse>)

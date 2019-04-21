@@ -17,9 +17,8 @@ fun View.hideKeyboard() {
 }
 
 fun Double.tempFormatter(): String {
-    var centi = (this.toInt().minus(32)).div(1.8000)
-    centi = Math.round(centi).toDouble()
-    return centi.toString() + 0x00B0.toChar()
+    val centi = (this.toInt().minus(32)).div(1.8000)
+    return Math.round(centi).toString() + 0x00B0.toChar()
 }
 
 infix fun String.toast(context: Context) {
@@ -31,6 +30,5 @@ fun String.dateDoDay(): String {
     val inFormat = SimpleDateFormat("yyy-MM-dd")
     val date = inFormat.parse(this)
     val outFormat = SimpleDateFormat("EEEE")
-    val day = outFormat.format(date)
-    return day
+    return outFormat.format(date)
 }

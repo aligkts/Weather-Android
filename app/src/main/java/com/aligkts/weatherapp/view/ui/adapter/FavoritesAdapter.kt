@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.aligkts.weatherapp.data.network.model.ModelResponse
 import com.aligkts.weatherapp.data.INotifyRecycler
 
-class FavoritesAdapter(var itemList: List<ModelResponse>,var listener: INotifyRecycler) : RecyclerView.Adapter<FavoritesViewHolder>(),Filterable {
+class FavoritesAdapter(var itemList: List<ModelResponse>, private var listener: INotifyRecycler) : RecyclerView.Adapter<FavoritesViewHolder>(),Filterable {
 
     lateinit var searchedListFiltered: List<ModelResponse>
 

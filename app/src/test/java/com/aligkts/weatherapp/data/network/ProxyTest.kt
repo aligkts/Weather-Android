@@ -1,17 +1,13 @@
 package com.aligkts.weatherapp.data.network
 
 import com.aligkts.weatherapp.data.network.model.ModelResponse
-import com.aligkts.weatherapp.presenter.MainContract
-import com.google.android.gms.maps.model.LatLng
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doAnswer
 import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.verify
 import org.junit.Test
 import org.junit.Before
 import org.mockito.Mockito
 import retrofit2.Call
-import retrofit2.Callback
 import retrofit2.Response
 
 class ProxyTest {

@@ -6,7 +6,7 @@ import android.os.AsyncTask
 import android.util.Log
 import com.aligkts.weatherapp.data.IDownloadedImageBitmap
 
-class DownloadImage(var listener: IDownloadedImageBitmap) : AsyncTask<String, Void, Bitmap>() {
+class DownloadImage(private var listener: IDownloadedImageBitmap) : AsyncTask<String, Void, Bitmap>() {
 
     override fun doInBackground(vararg urls: String): Bitmap? {
         val urldisplay = urls.first()

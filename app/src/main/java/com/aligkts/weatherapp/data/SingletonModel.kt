@@ -8,7 +8,7 @@ import com.aligkts.weatherapp.data.network.model.ModelResponse
 
 class SingletonModel private constructor() {
 
-    var dataList = ModelResponse()
+    private var dataList = ModelResponse()
 
     companion object {
         private var uniqInstance: SingletonModel? = null

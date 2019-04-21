@@ -9,7 +9,6 @@ import com.aligkts.weatherapp.data.database.DBConnectionManager
 import com.aligkts.weatherapp.data.database.model.FavoriteLocation
 import com.aligkts.weatherapp.data.dto.weatherbylocation.Coord
 import com.aligkts.weatherapp.data.network.Proxy
-import com.aligkts.weatherapp.data.network.model.ModelResponse
 import com.aligkts.weatherapp.util.toast
 import com.aligkts.weatherapp.view.ui.MainActivity
 import com.google.android.gms.common.ConnectionResult

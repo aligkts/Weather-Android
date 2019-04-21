@@ -1,5 +1,5 @@
 package com.aligkts.weatherapp.data
 
 interface INotifyRecycler {
-    fun removeBookmarkFromDb(position: Int)
+    fun notifyList(id: Int)
 }

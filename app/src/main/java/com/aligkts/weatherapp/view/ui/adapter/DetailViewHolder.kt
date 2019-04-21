@@ -14,7 +14,6 @@ import com.aligkts.weatherapp.util.Constant.Companion.API_IMAGE_BASE_URL
 import com.aligkts.weatherapp.util.DownloadImage
 import com.aligkts.weatherapp.util.dateDoDay
 import com.aligkts.weatherapp.util.tempFormatter
-import java.text.SimpleDateFormat
 
 class DetailViewHolder(viewGroup: ViewGroup) :
         RecyclerView.ViewHolder(

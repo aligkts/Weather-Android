@@ -27,5 +27,6 @@
     <string name="dummy_wind_speed">4</string>
     <string name="place_input_hint">Görmek istediğiniz semti giriniz</string>
     <string name="dummy_item_title">Dufresne</string>
+    <string name="column_date">date</string>
 
 </resources>

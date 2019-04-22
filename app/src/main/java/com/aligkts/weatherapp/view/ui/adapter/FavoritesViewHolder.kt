@@ -51,7 +51,7 @@ class FavoritesViewHolder(viewGroup: ViewGroup) :
                 .setPositiveButton(context.getString(R.string.alert_button_positive)) { dialog, which ->
                     model.id?.let {
                         DBConnectionManager(context).deleteClickedItem(it)
-                        listener.notifyList(it)
+                        listener.itemRemoved(it)
                     }
                 }.show()
             true

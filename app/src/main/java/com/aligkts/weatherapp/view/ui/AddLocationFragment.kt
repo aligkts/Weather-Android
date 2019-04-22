@@ -91,7 +91,7 @@ class AddLocationFragment : Fragment(), OnMapReadyCallback, AddLocationContract.
                         presenter.getResponseFromApiByLatLng(LatLng(it.latitude, it.longitude))
                     }.show()
         }
-        if (favoritesList.size > 0) {
+        if (favoritesList.isNotEmpty()) {
             for (i in 0 until favoritesList.size) {
                 addMarkerToMap(mGoogleMap, LatLng(favoritesList[i].latitude, favoritesList[i].longitude))
             }

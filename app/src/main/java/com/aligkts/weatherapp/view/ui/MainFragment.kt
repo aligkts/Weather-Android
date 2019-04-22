@@ -39,6 +39,7 @@ class MainFragment : Fragment(), INotifyRecycler, MainContract.View, IDownloaded
     private var dataListFavoritesFromRequest = ArrayList<ModelResponse>()
     private var mAdapter = FavoritesAdapter(ArrayList(), this)
     private lateinit var presenter: MainPresenter
+    private var searchText= ""
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         presenter = MainPresenter(activity!!.applicationContext, this)
@@ -47,19 +48,15 @@ class MainFragment : Fragment(), INotifyRecycler, MainContract.View, IDownloaded
         return inflater.inflate(R.layout.fragment_main, container, false)
     }
 
-    override fun onStart() {
-        super.onStart()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         if (ContextCompat.checkSelfPermission(activity!!,
-                        Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(permissions, LOCATION_REQUEST_CODE)
         } else {
             // Permission has already been granted
             presenter.getCurrentLocationCoordFromUser()
         }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         currentPanel.setOnClickListener {
             presenter.navigateToWeatherDetail()
         }
@@ -76,6 +73,9 @@ class MainFragment : Fragment(), INotifyRecycler, MainContract.View, IDownloaded
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
+                newText?.let {
+                    searchText = it
+                }
                 mAdapter.filter.filter(newText)
                 return false
             }
@@ -109,12 +109,15 @@ class MainFragment : Fragment(), INotifyRecycler, MainContract.View, IDownloaded
         }
     }
 
-    override fun notifyList(id: Int) {
+    override fun itemRemoved(id: Int) {
         for (i in 0 until dataListFavoritesFromRequest.size) {
             if (dataListFavoritesFromRequest[i].id == id) {
                 dataListFavoritesFromRequest.removeAt(i)
+                break
             }
         }
+        mAdapter.setNewList(dataListFavoritesFromRequest)
+        mAdapter.filter.filter(searchText)
         mAdapter.notifyDataSetChanged()
     }
 

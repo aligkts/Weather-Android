@@ -14,6 +14,7 @@ import com.aligkts.weatherapp.view.ui.MainActivity
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.maps.model.LatLng
+import java.util.*
 
 class AddLocationPresenter(private var context: Context, private var mView: AddLocationContract.View) : AddLocationContract.Presenter{
 
@@ -41,6 +42,7 @@ class AddLocationPresenter(private var context: Context, private var mView: AddL
             if (isSuccess) {
                 response?.let { _response ->
                     val dbModel = FavoriteLocation()
+                    val currentDate = Date()
                     _response.id?.let { _id ->
                         dbModel.id = _id
                     }
@@ -52,6 +54,7 @@ class AddLocationPresenter(private var context: Context, private var mView: AddL
                             dbModel.longitude = _longitude
                         }
                     }
+                    dbModel.date = currentDate.time
                     db.insertData(dbModel)
                 }
             } else {

@@ -6,15 +6,19 @@
     app:startDestination="@id/mainFragment">
 
     <fragment
-            android:id="@+id/mainFragment"
-            android:name="com.aligkts.weatherapp.view.ui.MainFragment"
-            android:label="fragment_main"
-            tools:layout="@layout/fragment_main" >
-        <action android:id="@+id/action_main_to_detail"
-                app:destination="@id/weatherDetailFragment"/>
+        android:id="@+id/mainFragment"
+        android:name="com.aligkts.weatherapp.view.ui.MainFragment"
+        android:label="fragment_main"
+        tools:layout="@layout/fragment_main">
+        <action
+            android:id="@+id/action_main_to_detail"
+            app:destination="@id/weatherDetailFragment" />
         <action
             android:id="@+id/action_main_to_add_location"
             app:destination="@id/addLocationFragment" />
+        <action
+            android:id="@+id/action_main_to_viewpager"
+            app:destination="@id/viewPagerFragment" />
     </fragment>
     <fragment
         android:id="@+id/weatherDetailFragment"
@@ -26,4 +30,9 @@
         android:name="com.aligkts.weatherapp.view.ui.AddLocationFragment"
         android:label="fragment_add_location"
         tools:layout="@layout/fragment_add_location" />
+    <fragment
+        android:id="@+id/viewPagerFragment"
+        android:name="com.aligkts.weatherapp.view.ui.viewpager.ViewPagerFragment"
+        android:label="fragment_view_pager"
+        tools:layout="@layout/fragment_view_pager" />
 </navigation>

@@ -29,6 +29,7 @@ import com.aligkts.weatherapp.presenter.MainPresenter
 import com.aligkts.weatherapp.view.ui.adapter.FavoritesAdapter
 import com.aligkts.weatherapp.util.Constant.Companion.API_IMAGE_BASE_URL
 import com.aligkts.weatherapp.util.tempFormatter
+import com.aligkts.weatherapp.util.toast
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.android.synthetic.main.fragment_main.*
 
@@ -59,6 +60,9 @@ class MainFragment : Fragment(), INotifyRecycler, MainContract.View, IDownloaded
         }
         currentPanel.setOnClickListener {
             presenter.navigateToWeatherDetail()
+        }
+        questionMark.setOnClickListener {
+            Navigation.findNavController(it).navigate(R.id.action_main_to_viewpager)
         }
         fabButton.setOnClickListener {
             Navigation.findNavController(it).navigate(R.id.action_main_to_add_location)

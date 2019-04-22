@@ -20,6 +20,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
 }
 
 dependencies {
@@ -37,5 +40,10 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
     implementation 'com.google.android.gms:play-services-maps:16.1.0'
     implementation 'com.android.support:design:28.0.0'
+    testImplementation 'org.mockito:mockito-core:2.23.0'
+    testImplementation 'org.robolectric:robolectric:3.0'
+    testImplementation 'org.mockito:mockito-inline:2.13.0'
+    testImplementation "com.nhaarman:mockito-kotlin-kt1.1:1.5.0"
+
 
 }

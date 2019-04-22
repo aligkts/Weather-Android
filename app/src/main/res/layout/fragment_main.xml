@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
-    tools:context=".ui.MainFragment">
+    tools:context="com.aligkts.weatherapp.view.ui.MainFragment">
 
     <LinearLayout
         android:id="@+id/weatherPanel"

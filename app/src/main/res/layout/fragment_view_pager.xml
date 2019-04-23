@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,26 +9,25 @@
 
     <TextView
         android:id="@+id/txtViewPagerTitle"
-        android:text="WEATHER APP"
-        android:gravity="center"
-        android:textSize="26sp"
-        android:textStyle="bold"
-        android:layout_margin="8dp"
-        android:textColor="@android:color/black"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:gravity="center"
+        android:text="WEATHER APP"
+        android:textColor="@android:color/black"
+        android:textSize="26sp"
+        android:textStyle="bold" />
 
     <me.relex.circleindicator.CircleIndicator
         android:id="@+id/indicator"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="20dp"/>
+        android:minHeight="20dp"
+        app:ci_drawable="@drawable/black_radius" />
 
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-
-
+        android:layout_height="match_parent" />
 
 </LinearLayout>

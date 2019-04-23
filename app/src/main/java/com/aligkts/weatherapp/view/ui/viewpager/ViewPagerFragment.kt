@@ -14,7 +14,6 @@ import kotlinx.android.synthetic.main.fragment_view_pager.*
 
 class ViewPagerFragment : androidx.fragment.app.Fragment() {
 
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_view_pager, container, false)
@@ -27,6 +26,7 @@ class ViewPagerFragment : androidx.fragment.app.Fragment() {
         viewPagerAdapter.addFragment(AddLocationWebviewFragment())
         viewPagerAdapter.addFragment(WeatherDetailWebviewFragment())
         viewPager.adapter = viewPagerAdapter
+        indicator.setViewPager(viewPager)
     }
 
     class ViewPagerAdapter(manager: FragmentManager) : FragmentPagerAdapter(manager) {

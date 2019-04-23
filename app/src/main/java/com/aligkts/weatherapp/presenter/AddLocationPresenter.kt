@@ -22,8 +22,8 @@ class AddLocationPresenter(private var context: Context, private var mView: AddL
     private val db by lazy { DBConnectionManager(context) }
 
     override fun getCurrentSingletonData() {
-        var currentLatitude: Double? = null
-        var currentLongitude: Double? = null
+        var currentLatitude: Double? = 0.0
+        var currentLongitude: Double? = 0.0
         SingletonModel.instance?.let {
             it.getCurrentList().coord?.let { _coord ->
                 _coord.lat?.let { _latitude ->
@@ -55,8 +55,7 @@ class AddLocationPresenter(private var context: Context, private var mView: AddL
                     }
                     db.insertData(dbModel)
                 }
-            }
-            else {
+            } else {
                 message.toString() toast (context)
             }
         }

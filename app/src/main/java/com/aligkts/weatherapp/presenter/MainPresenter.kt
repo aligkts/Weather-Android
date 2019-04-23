@@ -77,8 +77,7 @@ class MainPresenter(private var context: Context,private var mView: MainContract
                         response?.let { _response ->
                             dataListFavoritesFromRequest.add(_response)
                         }
-                    }
-                    else {
+                    } else {
                         message.toString() toast (context)
                     }
                 }

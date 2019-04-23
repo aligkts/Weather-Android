@@ -23,7 +23,7 @@ class AddLocationPresenterTest {
     @Test
     fun getCurrentSingletonData() {
         presenter.getCurrentSingletonData()
-        verify(mView).currentLocationData(Coord(null,null))
+        verify(mView).currentLocationData(Coord(0.0,0.0))
     }
 
 }

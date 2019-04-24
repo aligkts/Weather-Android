@@ -73,7 +73,19 @@
                 app:layout_constraintHorizontal_bias="0.282"
                 app:layout_constraintStart_toEndOf="@+id/imgWeatherIcon"
                 app:layout_constraintTop_toBottomOf="@+id/txtCurrentLocation" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <ImageView
+            android:id="@+id/questionMark"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:padding="24dp"
+            android:src="@drawable/ic_question_mark"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.appcompat.widget.SearchView
             android:id="@+id/searchView"
@@ -83,9 +95,9 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:layout_weight="80"
+            android:background="@drawable/bg_searchview"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:background="@drawable/bg_searchview"
             app:layout_constraintTop_toBottomOf="@+id/currentPanel" />
 
         <androidx.recyclerview.widget.RecyclerView
@@ -96,14 +108,14 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
+            android:clipToPadding="false"
             android:overScrollMode="never"
-            tools:listitem="@layout/item_bookmark"
+            android:paddingBottom="50dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/searchView"
-            android:paddingBottom="50dp"
-            android:clipToPadding="false"/>
+            tools:listitem="@layout/item_bookmark" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabButton"

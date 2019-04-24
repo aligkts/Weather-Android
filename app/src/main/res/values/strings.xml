@@ -25,8 +25,11 @@
     <string name="dummy_humidity">100%</string>
     <string name="dummy_rain_possibility">20</string>
     <string name="dummy_wind_speed">4</string>
-    <string name="place_input_hint">Görmek istediğiniz semti giriniz</string>
+    <string name="place_input_hint">Görmek istediğiniz lokasyonu giriniz</string>
     <string name="dummy_item_title">Dufresne</string>
     <string name="column_date">date</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

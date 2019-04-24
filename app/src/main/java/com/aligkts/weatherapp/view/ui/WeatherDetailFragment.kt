@@ -20,6 +20,7 @@ import com.aligkts.weatherapp.data.network.model.ModelResponse
 import com.aligkts.weatherapp.presenter.DetailContract
 import com.aligkts.weatherapp.presenter.DetailPresenter
 import com.aligkts.weatherapp.util.Constant
+import com.aligkts.weatherapp.util.hideKeyboard
 import com.aligkts.weatherapp.view.ui.adapter.DetailAdapter
 import com.aligkts.weatherapp.util.tempFormatter
 import com.google.android.gms.maps.model.LatLng
@@ -33,6 +34,9 @@ class WeatherDetailFragment : Fragment(), DetailContract.View, IDownloadedImageB
     lateinit var presenter: DetailPresenter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        container?.let {
+            it.hideKeyboard()
+        }
         presenter = DetailPresenter(this)
         return inflater.inflate(R.layout.fragment_weather_detail, container, false)
     }
@@ -51,9 +55,9 @@ class WeatherDetailFragment : Fragment(), DetailContract.View, IDownloadedImageB
                                   dataList.wind,
                                   dataList.weather)
         dataList.coord?.let { _coord ->
-            _coord.lat?.let { _lat ->
-                _coord.lon?.let { _lon ->
-                    presenter.getResponseWithoutRetrofitByLatLng(LatLng(_lat, _lon))
+            _coord.lat?.let { _latitude ->
+                _coord.lon?.let { _longitude ->
+                    presenter.getResponseWithoutRetrofitByLatLng(LatLng(_latitude, _longitude))
                 }
             }
         }

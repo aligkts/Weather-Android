@@ -70,7 +70,7 @@ class MainPresenter(private var context: Context,private var mView: MainContract
 
     override fun getBookmarkListFromDb() {
         val bookmarkList = db.readFavoritesList()
-        if (bookmarkList.size > 0) {
+        if (bookmarkList.isNotEmpty()) {
             for (i in 0 until bookmarkList.size) {
                 proxy.getResponseFromApiByLatLng(LatLng(bookmarkList[i].latitude, bookmarkList[i].longitude)) {isSuccess, response, message ->
                     if (isSuccess) {

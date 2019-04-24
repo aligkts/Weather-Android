@@ -37,8 +37,9 @@ class MainFragment : Fragment(), INotifyRecycler, MainContract.View, IDownloaded
     private val LOCATION_REQUEST_CODE = 101
     private var permissions = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
     private var dataListFavoritesFromRequest = ArrayList<ModelResponse>()
-    private var mAdapter = FavoritesAdapter(ArrayList(),this)
+    private var mAdapter = FavoritesAdapter(ArrayList(), this)
     private lateinit var presenter: MainPresenter
+    private var searchText= ""
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         presenter = MainPresenter(activity!!.applicationContext, this)
@@ -47,8 +48,8 @@ class MainFragment : Fragment(), INotifyRecycler, MainContract.View, IDownloaded
         return inflater.inflate(R.layout.fragment_main, container, false)
     }
 
-    override fun onStart() {
-        super.onStart()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         if (ContextCompat.checkSelfPermission(activity!!,
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(permissions, LOCATION_REQUEST_CODE)
@@ -56,29 +57,29 @@ class MainFragment : Fragment(), INotifyRecycler, MainContract.View, IDownloaded
             // Permission has already been granted
             presenter.getCurrentLocationCoordFromUser()
         }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        layoutCurrentTemp.setOnClickListener {
+        currentPanel.setOnClickListener {
             presenter.navigateToWeatherDetail()
         }
         fabButton.setOnClickListener {
             Navigation.findNavController(it).navigate(R.id.action_main_to_add_location)
         }
-        searchView.setOnSearchClickListener {
-            searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
-                override fun onQueryTextSubmit(query: String?): Boolean {
-                    mAdapter.filter.filter(query)
-                    return false
-                }
-
-                override fun onQueryTextChange(newText: String?): Boolean {
-                    mAdapter.filter.filter(newText)
-                    return false
-                }
-            })
+        searchView.setOnClickListener {
+            searchView.isIconified = false
         }
+        searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                mAdapter.filter.filter(query)
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                newText?.let {
+                    searchText = it
+                }
+                mAdapter.filter.filter(newText)
+                return false
+            }
+        })
     }
 
     override fun bookmarkList(list: ArrayList<ModelResponse>) {
@@ -108,8 +109,15 @@ class MainFragment : Fragment(), INotifyRecycler, MainContract.View, IDownloaded
         }
     }
 
-    override fun removeBookmarkFromDb(position: Int) {
-        dataListFavoritesFromRequest.removeAt(position)
+    override fun itemRemoved(id: Int) {
+        for (i in 0 until dataListFavoritesFromRequest.size) {
+            if (dataListFavoritesFromRequest[i].id == id) {
+                dataListFavoritesFromRequest.removeAt(i)
+                break
+            }
+        }
+        mAdapter.setNewList(dataListFavoritesFromRequest)
+        mAdapter.filter.filter(searchText)
         mAdapter.notifyDataSetChanged()
     }
 
@@ -144,16 +152,16 @@ class MainFragment : Fragment(), INotifyRecycler, MainContract.View, IDownloaded
     }
 
     private fun showAlertDialogForPermissionDeniedWithCheck() = AlertDialog.Builder(activity!!)
-        .setMessage(getString(R.string.permission_message))
-        .setPositiveButton(getString(R.string.settings)) { dialog, which ->
-            val intent = Intent()
-            intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-            val uri = Uri.fromParts(getString(R.string.scheme), activity!!.packageName, null)
-            intent.data = uri
-            context?.startActivity(intent)
-        }.setNegativeButton(getString(R.string.exit)) { dialog, which ->
-            activity!!.finish()
-        }.setCancelable(false).show()
+            .setMessage(getString(R.string.permission_message))
+            .setPositiveButton(getString(R.string.settings)) { dialog, which ->
+                val intent = Intent()
+                intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                val uri = Uri.fromParts(getString(R.string.scheme), activity!!.packageName, null)
+                intent.data = uri
+                context?.startActivity(intent)
+            }.setNegativeButton(getString(R.string.exit)) { dialog, which ->
+                activity!!.finish()
+            }.setCancelable(false).show()
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         when (requestCode) {
@@ -161,7 +169,7 @@ class MainFragment : Fragment(), INotifyRecycler, MainContract.View, IDownloaded
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     presenter.getCurrentLocationCoordFromUser()
                 } else if (!shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) ||
-                           !shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                        !shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION)) {
                     showAlertDialogForPermissionDeniedWithCheck()
                 }
             }

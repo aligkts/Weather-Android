@@ -9,12 +9,12 @@ import com.aligkts.weatherapp.data.database.DBConnectionManager
 import com.aligkts.weatherapp.data.database.model.FavoriteLocation
 import com.aligkts.weatherapp.data.dto.weatherbylocation.Coord
 import com.aligkts.weatherapp.data.network.Proxy
-import com.aligkts.weatherapp.data.network.model.ModelResponse
 import com.aligkts.weatherapp.util.toast
 import com.aligkts.weatherapp.view.ui.MainActivity
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.maps.model.LatLng
+import java.util.*
 
 class AddLocationPresenter(private var context: Context, private var mView: AddLocationContract.View) : AddLocationContract.Presenter{
 
@@ -42,6 +42,7 @@ class AddLocationPresenter(private var context: Context, private var mView: AddL
             if (isSuccess) {
                 response?.let { _response ->
                     val dbModel = FavoriteLocation()
+                    val currentDate = Date()
                     _response.id?.let { _id ->
                         dbModel.id = _id
                     }
@@ -53,6 +54,7 @@ class AddLocationPresenter(private var context: Context, private var mView: AddL
                             dbModel.longitude = _longitude
                         }
                     }
+                    dbModel.date = currentDate.time
                     db.insertData(dbModel)
                 }
             } else {

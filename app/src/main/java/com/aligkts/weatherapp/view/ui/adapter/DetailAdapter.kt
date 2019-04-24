@@ -4,7 +4,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.aligkts.weatherapp.data.network.model.ModelResponse
 
-class DetailAdapter(var itemList: List<ModelResponse>) : RecyclerView.Adapter<DetailViewHolder>() {
+class DetailAdapter(private var itemList: List<ModelResponse>) : RecyclerView.Adapter<DetailViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DetailViewHolder {
         return DetailViewHolder(parent)

@@ -49,8 +49,10 @@ class FavoritesViewHolder(viewGroup: ViewGroup) :
                 .setMessage(context.getString(R.string.alert_message_delete_location))
                 .setNegativeButton(context.getString(R.string.alert_button_negative)) { dialog, which -> dialog.dismiss() }
                 .setPositiveButton(context.getString(R.string.alert_button_positive)) { dialog, which ->
-                    model.id?.let { DBConnectionManager(context).deleteClickedItem(it) }
-                    listener.removeBookmarkFromDb(adapterPosition)
+                    model.id?.let {
+                        DBConnectionManager(context).deleteClickedItem(it)
+                        listener.itemRemoved(it)
+                    }
                 }.show()
             true
         }

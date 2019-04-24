@@ -1,7 +1,6 @@
 package com.aligkts.weatherapp.presenter
 
 import com.aligkts.weatherapp.data.dto.weatherbylocation.Coord
-import com.aligkts.weatherapp.data.network.model.ModelResponse
 import com.google.android.gms.maps.model.LatLng
 
 

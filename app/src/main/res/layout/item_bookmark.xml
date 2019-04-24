@@ -16,7 +16,6 @@
         android:text="@string/dummy_item_title"
         android:textColor="@android:color/black" />
 
-
     <TextView
         android:id="@+id/txtItemTemp"
         android:layout_width="wrap_content"
@@ -33,6 +32,5 @@
         android:minHeight="30dp"
         android:layout_margin="8dp"
         android:contentDescription="@string/contentDescriptionContent"/>
-
 
 </LinearLayout>

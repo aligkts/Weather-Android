@@ -18,14 +18,15 @@ class DBConnectionManager(val context: Context) :
     private val COL_ID = context.getString(R.string.column_id)
     private val COL_LAT = context.getString(R.string.column_lat)
     private val COL_LON = context.getString(R.string.column_lon)
+    private val COL_DATE = context.getString(R.string.column_date)
 
     companion object {
-        private val DATABASE_NAME = "WEATHER_DATABASE"
-        private val DATABASE_VERSION = 1
+        private const val DATABASE_NAME = "WEATHER_DATABASE"
+        private const val DATABASE_VERSION = 1
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
-        val createTable = "CREATE TABLE $TABLE_NAME ($COL_ID INTEGER, $COL_LAT  VARCHAR(100),$COL_LON  VARCHAR(100))"
+        val createTable = "CREATE TABLE $TABLE_NAME ($COL_ID INTEGER, $COL_LAT  VARCHAR(50),$COL_LON  VARCHAR(50),$COL_DATE  VARCHAR(50))"
         db?.execSQL(createTable)
     }
 
@@ -39,11 +40,12 @@ class DBConnectionManager(val context: Context) :
         contentValues.put(COL_ID, model.id)
         contentValues.put(COL_LAT, model.latitude)
         contentValues.put(COL_LON, model.longitude)
+        contentValues.put(COL_DATE,model.date)
         val result = sqliteDB.insert(TABLE_NAME, null, contentValues)
         return result != -1L
     }
 
-    fun readFavoritesList(): ArrayList<FavoriteLocation> {
+    fun readFavoritesList(): List<FavoriteLocation> {
         val locationList = mutableListOf<FavoriteLocation>()
         val sqliteDB = this.readableDatabase
         val query = "SELECT * FROM $TABLE_NAME"
@@ -54,12 +56,14 @@ class DBConnectionManager(val context: Context) :
                 favorites.id = result.getString(result.getColumnIndex(COL_ID)).toInt()
                 favorites.latitude = result.getString(result.getColumnIndex(COL_LAT)).toDouble()
                 favorites.longitude = result.getString(result.getColumnIndex(COL_LON)).toDouble()
+                favorites.date = result.getLong(result.getColumnIndex(COL_DATE))
                 locationList.add(favorites)
             } while (result.moveToNext())
         }
         result.close()
         sqliteDB.close()
-        return locationList as ArrayList<FavoriteLocation>
+        val sortedList = locationList.sortedWith(compareByDescending { it.date })
+        return sortedList
     }
 
     fun deleteClickedItem(position: Int) {

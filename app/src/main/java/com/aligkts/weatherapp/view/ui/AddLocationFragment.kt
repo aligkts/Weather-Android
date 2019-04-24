@@ -11,9 +11,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.aligkts.weatherapp.R
 import com.aligkts.weatherapp.data.database.DBConnectionManager
-import com.aligkts.weatherapp.data.database.model.FavoriteLocation
 import com.aligkts.weatherapp.data.dto.weatherbylocation.Coord
-import com.aligkts.weatherapp.data.network.model.ModelResponse
 import com.aligkts.weatherapp.presenter.AddLocationPresenter
 import com.aligkts.weatherapp.presenter.AddLocationContract
 import com.aligkts.weatherapp.util.hideKeyboard
@@ -28,7 +26,7 @@ import kotlinx.android.synthetic.main.fragment_add_location.*
 
 class AddLocationFragment : Fragment(), OnMapReadyCallback, AddLocationContract.View {
 
-    lateinit var mGoogleMap: GoogleMap
+    private lateinit var mGoogleMap: GoogleMap
     private var currentLat: Double = 0.0
     private var currentLng: Double = 0.0
     private val db by lazy { DBConnectionManager(activity!!.applicationContext) }
@@ -93,7 +91,7 @@ class AddLocationFragment : Fragment(), OnMapReadyCallback, AddLocationContract.
                         presenter.getResponseFromApiByLatLng(LatLng(it.latitude, it.longitude))
                     }.show()
         }
-        if (favoritesList.size > 0) {
+        if (favoritesList.isNotEmpty()) {
             for (i in 0 until favoritesList.size) {
                 addMarkerToMap(mGoogleMap, LatLng(favoritesList[i].latitude, favoritesList[i].longitude))
             }
@@ -112,4 +110,5 @@ class AddLocationFragment : Fragment(), OnMapReadyCallback, AddLocationContract.
             it.hideKeyboard()
         }
     }
+
 }

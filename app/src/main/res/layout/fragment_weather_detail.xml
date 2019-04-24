@@ -1,90 +1,128 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context="com.aligkts.weatherapp.view.ui.WeatherDetailFragment">
 
     <TextView
         android:id="@+id/txtCurrentLocDetail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
         android:gravity="center"
         android:text="@string/dummy_current_loc"
         android:textColor="@android:color/black"
-        android:textSize="36sp" />
+        android:textSize="36sp"
+        app:layout_constraintBottom_toTopOf="@+id/imgWeatherIconDetail"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+    <ImageView
+        android:id="@+id/imgWeatherIconDetail"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_margin="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/app_icon"
+        android:contentDescription="@string/contentDescriptionContent"
+        app:layout_constraintBottom_toBottomOf="@+id/txtCurrentTempDetail"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtCurrentLocDetail" />
 
-        <ImageView
-            android:id="@+id/imgWeatherIconDetail"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_margin="8dp"
-            android:contentDescription="@string/contentDescriptionContent" />
-
-        <TextView
-            android:id="@+id/txtCurrentTempDetail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginStart="8dp"
-            android:text="@string/dummy_current_temp"
-            android:textColor="@android:color/black"
-            android:textSize="50sp"
-            android:textStyle="bold" />
-
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+    <TextView
+        android:id="@+id/txtCurrentTempDetail"
+        android:layout_width="wrap_content"
+        android:layout_height="80dp"
+        android:layout_gravity="center"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="@string/dummy_current_temp"
+        android:textColor="@android:color/black"
+        android:textSize="50sp"
+        android:textStyle="bold"
         android:gravity="center"
-        android:orientation="horizontal">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.282"
+        app:layout_constraintStart_toEndOf="@+id/imgWeatherIconDetail"
+        app:layout_constraintTop_toBottomOf="@+id/txtCurrentLocDetail" />
 
-        <TextView
-            android:id="@+id/txtHumidity"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:drawableStart="@drawable/ic_pressure"
-            android:drawablePadding="10dp"
-            android:text="@string/dummy_humidity"
-            android:textColor="@android:color/black" />
+    <TextView
+        android:id="@+id/txtHumidity"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:layout_marginStart="8dp"
+        android:drawableStart="@drawable/ic_pressure"
+        android:drawablePadding="10dp"
+        android:text="@string/dummy_humidity"
+        android:gravity="center"
+        android:textColor="@android:color/black"
+        android:textSize="26sp"
+        app:layout_constraintEnd_toStartOf="@id/txtRainPossibility"
+        app:layout_constraintTop_toBottomOf="@+id/txtCurrentTempDetail"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="189dp" />
 
-        <TextView
-            android:id="@+id/txtRainPossibility"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:drawableStart="@drawable/ic_rain_pos"
-            android:drawablePadding="10dp"
-            android:text="@string/dummy_rain_possibility"
-            android:textColor="@android:color/black" />
+    <TextView
+        android:id="@+id/txtRainPossibility"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:gravity="center"
+        android:drawableStart="@drawable/ic_rain_pos"
+        android:drawablePadding="10dp"
+        android:text="@string/dummy_rain_possibility"
+        android:textColor="@android:color/black"
+        android:textSize="26sp"
+        app:layout_constraintTop_toBottomOf="@+id/txtCurrentTempDetail"
+        app:layout_constraintEnd_toStartOf="@+id/txtWindSpeed"
+        app:layout_constraintHorizontal_bias="0.36"
+        app:layout_constraintStart_toEndOf="@+id/txtHumidity"
+        tools:layout_editor_absoluteY="189dp" />
 
-        <TextView
-            android:id="@+id/txtWindSpeed"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:drawableStart="@drawable/ic_wind"
-            android:drawablePadding="10dp"
-            android:text="@string/dummy_wind_speed"
-            android:textColor="@android:color/black" />
-
-
-    </LinearLayout>
+    <TextView
+        android:id="@+id/txtWindSpeed"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:layout_marginEnd="8dp"
+        android:gravity="center"
+        android:drawableStart="@drawable/ic_wind"
+        android:drawablePadding="10dp"
+        android:text="@string/dummy_wind_speed"
+        android:textColor="@android:color/black"
+        android:textSize="26sp"
+        app:layout_constraintStart_toEndOf="@id/txtRainPossibility"
+        app:layout_constraintTop_toBottomOf="@+id/txtCurrentTempDetail"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:layout_editor_absoluteY="189dp" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerDetail"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="8dp"
+        android:overScrollMode="never"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtRainPossibility"
         tools:listitem="@layout/item_bookmark" />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
 

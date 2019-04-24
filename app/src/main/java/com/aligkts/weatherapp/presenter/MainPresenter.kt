@@ -2,10 +2,12 @@ package com.aligkts.weatherapp.presenter
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
+import android.net.Uri
 import android.os.Bundle
 import androidx.core.content.ContextCompat
 import com.aligkts.weatherapp.data.database.DBConnectionManager
@@ -97,6 +99,12 @@ class MainPresenter(private var context: Context,private var mView: MainContract
                 message.toString() toast (context)
             }
         }
+    }
+
+    override fun rateApp() {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.pepsico.kazandirio"))
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        context.startActivity(intent)
     }
 
 }

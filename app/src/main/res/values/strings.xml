@@ -31,5 +31,7 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="rate_us_message">Uygulamamızı değerlendirmek ister misiniz?</string>
+    <string name="send">Gönder</string>
 
 </resources>

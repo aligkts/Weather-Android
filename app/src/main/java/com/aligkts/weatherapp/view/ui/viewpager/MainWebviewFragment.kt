@@ -19,7 +19,9 @@ class MainWebviewFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mainWebview.loadUrl("file:///android_asset/main_html.html")
+        mainWebview.loadUrl("file:///android_asset/html/main_html.html")
+        mainWebview.settings.loadWithOverviewMode = true
+        mainWebview.settings.useWideViewPort = true
     }
 
 

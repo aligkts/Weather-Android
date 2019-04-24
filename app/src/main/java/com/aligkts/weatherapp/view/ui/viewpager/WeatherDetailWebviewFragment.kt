@@ -18,7 +18,9 @@ class WeatherDetailWebviewFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        detailWebview.loadUrl("file:///android_asset/detail_html.html")
+        detailWebview.loadUrl("file:///android_asset/html/detail_html.html")
+        detailWebview.settings.loadWithOverviewMode = true
+        detailWebview.settings.useWideViewPort = true
     }
 
 }

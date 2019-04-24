@@ -18,7 +18,9 @@ class AddLocationWebviewFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        addLocationWebview.loadUrl("file:///android_asset/add_loc_html.html")
+        addLocationWebview.loadUrl("file:///android_asset/html/add_loc_html.html")
+        addLocationWebview.settings.loadWithOverviewMode = true
+        addLocationWebview.settings.useWideViewPort = true
     }
 
 

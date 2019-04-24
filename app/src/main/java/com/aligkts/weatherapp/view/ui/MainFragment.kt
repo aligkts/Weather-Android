@@ -46,12 +46,10 @@ class MainFragment : Fragment(), INotifyRecycler, MainContract.View, IDownloaded
     private val prefs by lazy { PreferenceManager.getDefaultSharedPreferences(activity) }
     private val appRated by lazy { prefs.getBoolean("rated", false) }
 
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         presenter = MainPresenter(activity!!.applicationContext, this)
         dataListFavoritesFromRequest.clear()
         presenter.getBookmarkListFromDb()
-
         return inflater.inflate(R.layout.fragment_main, container, false)
     }
 
@@ -63,7 +61,7 @@ class MainFragment : Fragment(), INotifyRecycler, MainContract.View, IDownloaded
         } else {
             // Permission has already been granted
             presenter.getCurrentLocationCoordFromUser()
-            if(!appRated) {
+            if (!appRated) {
                 showRateDialog()
             }
         }
@@ -195,7 +193,7 @@ class MainFragment : Fragment(), INotifyRecycler, MainContract.View, IDownloaded
         when (requestCode) {
             LOCATION_REQUEST_CODE -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if(!appRated) {
+                    if (!appRated) {
                         showRateDialog()
                     }
                     presenter.getCurrentLocationCoordFromUser()

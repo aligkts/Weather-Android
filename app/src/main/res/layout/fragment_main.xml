@@ -21,21 +21,22 @@
             android:layout_gravity="top|end"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
-            android:background="@drawable/ic_question_mark" />
+            android:background="@drawable/ic_question_mark"
+            android:contentDescription="@string/contentDescriptionContent"/>
 
 
         <TextView
             android:id="@+id/txtCurrentLocation"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="Konum"
+            android:layout_gravity="center"
+            android:text="@string/dummy_current_loc"
             android:textColor="@android:color/black"
             android:textSize="36sp" />
 
         <LinearLayout
             android:id="@+id/layoutCurrentTemp"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
@@ -43,21 +44,20 @@
                 android:id="@+id/imgWeatherIcon"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
-                android:layout_margin="8dp"/>
+                android:layout_margin="8dp"
+                android:contentDescription="@string/contentDescriptionContent"/>
 
             <TextView
                 android:id="@+id/txtCurrentTemp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="178dp"
+                android:layout_height="119dp"
                 android:layout_gravity="center"
-                android:layout_marginLeft="8dp"
-                android:text="14 C"
+                android:layout_margin="8dp"
+                android:text="@string/dummy_current_temp"
                 android:textColor="@android:color/black"
-                android:textSize="50sp"
-                android:textStyle="bold" />
-
+                android:textSize="70sp"
+                android:textStyle="bold"/>
         </LinearLayout>
-
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -70,7 +70,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="80" />
-
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fabButton"
@@ -86,7 +85,6 @@
             android:id="@+id/recyclerFavorites"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
-
 
     </LinearLayout>
 

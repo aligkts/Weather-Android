@@ -16,20 +16,20 @@ class Proxy {
     lateinit var parsedModel: ModelResponse
 
      fun getResponseFromApiByLatLng(latLng: LatLng,
-                                    requestCallback: (isSuccess: Boolean, response: ModelResponse?) -> (Unit)) {
+                                    requestCallback: (isSuccess: Boolean, response: ModelResponse?,message: String?) -> (Unit)) {
         RetrofitClient.getApi()
             .create(ApiHelper::class.java)
             .getWeatherByLatLng(latLng.latitude, latLng.longitude, weatherAppId, UnitType.Imperial.toString())
             .enqueue(object : CustomCallBack<ModelResponse> {
                 override fun onFailure(call: Call<ModelResponse>, t: Throwable) {
-                    requestCallback(false,null)
+                    requestCallback(false,null,t.localizedMessage)
                 }
 
                 override fun onResponse(call: Call<ModelResponse>, response: Response<ModelResponse>) {
                     response.body()?.let { _modelResponse ->
                         parsedModel = _modelResponse
                     }
-                    requestCallback(true, parsedModel)
+                    requestCallback(true, parsedModel,null)
                 }
             })
     }

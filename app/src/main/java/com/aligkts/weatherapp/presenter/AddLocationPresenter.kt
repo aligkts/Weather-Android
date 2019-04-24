@@ -22,8 +22,8 @@ class AddLocationPresenter(private var context: Context, private var mView: AddL
     private val db by lazy { DBConnectionManager(context) }
 
     override fun getCurrentSingletonData() {
-        var currentLatitude: Double? = null
-        var currentLongitude: Double? = null
+        var currentLatitude: Double? = 0.0
+        var currentLongitude: Double? = 0.0
         SingletonModel.instance?.let {
             it.getCurrentList().coord?.let { _coord ->
                 _coord.lat?.let { _latitude ->
@@ -38,7 +38,7 @@ class AddLocationPresenter(private var context: Context, private var mView: AddL
     }
 
     override fun getResponseFromApiByLatLng(latLng: LatLng) {
-        proxy.getResponseFromApiByLatLng(latLng) {isSuccess, response ->
+        proxy.getResponseFromApiByLatLng(latLng) {isSuccess, response, message->
             if (isSuccess) {
                 response?.let { _response ->
                     val dbModel = FavoriteLocation()
@@ -55,6 +55,8 @@ class AddLocationPresenter(private var context: Context, private var mView: AddL
                     }
                     db.insertData(dbModel)
                 }
+            } else {
+                message.toString() toast (context)
             }
         }
     }
@@ -81,4 +83,5 @@ class AddLocationPresenter(private var context: Context, private var mView: AddL
         val longitude = address.longitude
         return LatLng(latitude,longitude)
     }
+
 }

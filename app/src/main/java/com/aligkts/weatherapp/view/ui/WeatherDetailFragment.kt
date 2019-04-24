@@ -55,9 +55,9 @@ class WeatherDetailFragment : Fragment(), DetailContract.View, IDownloadedImageB
                                   dataList.wind,
                                   dataList.weather)
         dataList.coord?.let { _coord ->
-            _coord.lat?.let { _lat ->
-                _coord.lon?.let { _lon ->
-                    presenter.getResponseWithoutRetrofitByLatLng(LatLng(_lat, _lon))
+            _coord.lat?.let { _latitude ->
+                _coord.lon?.let { _longitude ->
+                    presenter.getResponseWithoutRetrofitByLatLng(LatLng(_latitude, _longitude))
                 }
             }
         }

@@ -15,13 +15,13 @@ import java.util.*
  */
 
 fun View.hideKeyboard() {
-    val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-    imm.hideSoftInputFromWindow(windowToken, 0)
+    val inputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    inputMethodManager.hideSoftInputFromWindow(windowToken, 0)
 }
 
 fun Double.tempFormatter(): String {
-    val centi = (this.toInt().minus(32)).div(1.8000)
-    return Math.round(centi).toString() + 0x00B0.toChar()
+    val centigrade = (this.toInt().minus(32)).div(1.8000)
+    return Math.round(centigrade).toString() + 0x00B0.toChar()
 }
 
 infix fun String.toast(context: Context) {

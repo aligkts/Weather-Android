@@ -4,18 +4,23 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
+import android.preference.PreferenceManager
 import androidx.core.content.ContextCompat
 import com.aligkts.weatherapp.data.database.DBConnectionManager
 import com.aligkts.weatherapp.data.dto.weatherbylocation.Coord
 import com.aligkts.weatherapp.data.network.Proxy
 import com.aligkts.weatherapp.data.network.model.ModelResponse
+import com.aligkts.weatherapp.util.UnitType
 import com.aligkts.weatherapp.util.toast
 import com.google.android.gms.maps.model.LatLng
+import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * Responsible for handling actions from the MainFragment and updating the UI
@@ -26,6 +31,17 @@ class MainPresenter(private var context: Context,private var mView: MainContract
     private val db by lazy { DBConnectionManager(context) }
     private val proxy by lazy { Proxy() }
     private val dataListFavoritesFromRequest = ArrayList<ModelResponse>()
+    private val prefs by lazy { PreferenceManager.getDefaultSharedPreferences(context) }
+    private val language by lazy { prefs.getString("language","en") }
+
+    override fun getDeviceLanguage() {
+        val lang = Locale.getDefault().language
+        if (lang == "tr") {
+            prefs.edit().putString("language",lang).apply()
+        } else {
+            prefs.edit().putString("language","en").apply()
+        }
+    }
 
     override fun getCurrentLocationCoordFromUser() {
         val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
@@ -74,7 +90,10 @@ class MainPresenter(private var context: Context,private var mView: MainContract
         val bookmarkList = db.readFavoritesList()
         if (bookmarkList.isNotEmpty()) {
             for (i in 0 until bookmarkList.size) {
-                proxy.getResponseFromApiByLatLng(LatLng(bookmarkList[i].latitude, bookmarkList[i].longitude)) {isSuccess, response, message ->
+                proxy.getResponseFromApiByLatLng(LatLng(bookmarkList[i].latitude,
+                                                        bookmarkList[i].longitude),
+                                                        language,
+                                                        UnitType.Metric.toString()) { isSuccess, response, message ->
                     if (isSuccess) {
                         response?.let { _response ->
                             dataListFavoritesFromRequest.add(_response)
@@ -88,14 +107,15 @@ class MainPresenter(private var context: Context,private var mView: MainContract
     }
 
     override fun getLatLngResponse(latLng: LatLng) {
-        proxy.getResponseFromApiByLatLng(latLng) {isSuccess, response, message ->
+        proxy.getResponseFromApiByLatLng(latLng,
+                                         language,
+                                         UnitType.Metric.toString()) {isSuccess, response, message ->
             if (isSuccess) {
                 response?.let { _response ->
                     mView.getCurrentParsedModel( _response)
                     mView.bookmarkList(dataListFavoritesFromRequest)
                 }
-            }
-            else {
+            } else {
                 message.toString() toast (context)
             }
         }

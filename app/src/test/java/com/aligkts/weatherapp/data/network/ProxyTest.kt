@@ -25,9 +25,10 @@ class ProxyTest {
         val mockedCall: Call<ModelResponse> = mock()
         val mockedResponse: ModelResponse = mock()
         Mockito.`when`(api.getWeatherByLatLng(41.0322807,
-                                              28.8381373,
-                                              "3c75e1a077769372966bc6050f85b57a",
-                                              "Imperial")).thenReturn(mockedCall)
+                28.8381373,
+                "3c75e1a077769372966bc6050f85b57a",
+                "Imperial",
+                "tr")).thenReturn(mockedCall)
         doAnswer { _invocationOnMock ->
             val callBack: CustomCallBack<ModelResponse> = _invocationOnMock.getArgument(0)
             callBack.onResponse(mockedCall, Response.success(mockedResponse))
@@ -38,10 +39,12 @@ class ProxyTest {
     fun testApiResponseFailure() {
         val mockCall: Call<ModelResponse> = mock()
         val mockThrowable: Throwable = mock()
-        Mockito.`when`(api.getWeatherByLatLng(41.0322807,
-                                              28.8381373,
-                                              "3c75e1a077769372966bc6050f85b57a",
-                                              "Imperial")).thenReturn(mockCall)
+        Mockito.`when`(api.getWeatherByLatLng(
+                41.0322807,
+                28.8381373,
+                "3c75e1a077769372966bc6050f85b57a",
+                "Imperial",
+                "tr")).thenReturn(mockCall)
         doAnswer {
             val callBack: CustomCallBack<ModelResponse> = it.getArgument(0)
             callBack.onFailure(mockCall, mockThrowable)

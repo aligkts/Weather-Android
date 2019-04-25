@@ -17,7 +17,7 @@ import com.aligkts.weatherapp.util.DownloadImage
 import com.aligkts.weatherapp.data.INotifyRecycler
 import com.aligkts.weatherapp.data.SingletonModel
 import com.aligkts.weatherapp.util.Constant.Companion.API_IMAGE_BASE_URL
-import com.aligkts.weatherapp.util.tempFormatter
+import com.aligkts.weatherapp.util.tempToCentigrade
 
 class FavoritesViewHolder(viewGroup: ViewGroup) :
         RecyclerView.ViewHolder(
@@ -35,7 +35,7 @@ class FavoritesViewHolder(viewGroup: ViewGroup) :
         model.main?.let {_main ->
             val temp = _main.temp
             temp?.let {_temp ->
-                txtItemTemp.text = _temp.tempFormatter()
+                txtItemTemp.text = _temp.tempToCentigrade()
             }
         }
         model.weather?.let { _listWeather ->

@@ -34,7 +34,7 @@
         android:theme="@style/MyRatingBar" />
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btnRate"
+        android:id="@+id/btnSendRate"
         android:layout_width="wrap_content"
         android:layout_height="40dp"
         android:layout_gravity="end"

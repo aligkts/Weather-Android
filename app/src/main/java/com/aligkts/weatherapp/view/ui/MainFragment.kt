@@ -30,7 +30,8 @@ import com.aligkts.weatherapp.presenter.MainContract
 import com.aligkts.weatherapp.presenter.MainPresenter
 import com.aligkts.weatherapp.view.ui.adapter.FavoritesAdapter
 import com.aligkts.weatherapp.util.Constant.Companion.API_IMAGE_BASE_URL
-import com.aligkts.weatherapp.util.tempFormatter
+import com.aligkts.weatherapp.util.tempToCentigrade
+import com.aligkts.weatherapp.util.toast
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.android.synthetic.main.custom_alert_dialog_rate_app.view.*
 import kotlinx.android.synthetic.main.fragment_main.*
@@ -45,9 +46,11 @@ class MainFragment : Fragment(), INotifyRecycler, MainContract.View, IDownloaded
     private var searchText= ""
     private val prefs by lazy { PreferenceManager.getDefaultSharedPreferences(activity) }
     private val appRated by lazy { prefs.getBoolean("rated", false) }
+    private val selectedHeatUnit by lazy { prefs.getString("heat", "c") }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         presenter = MainPresenter(activity!!.applicationContext, this)
+        presenter.getDeviceLanguage()
         dataListFavoritesFromRequest.clear()
         presenter.getBookmarkListFromDb()
         return inflater.inflate(R.layout.fragment_main, container, false)
@@ -70,6 +73,9 @@ class MainFragment : Fragment(), INotifyRecycler, MainContract.View, IDownloaded
         }
         questionMark.setOnClickListener {
             Navigation.findNavController(it).navigate(R.id.action_main_to_viewpager)
+        }
+        imgSettings.setOnClickListener {
+            Navigation.findNavController(it).navigate(R.id.action_main_to_settings)
         }
         fabButton.setOnClickListener {
             Navigation.findNavController(it).navigate(R.id.action_main_to_add_location)
@@ -145,7 +151,7 @@ class MainFragment : Fragment(), INotifyRecycler, MainContract.View, IDownloaded
         response.main?.let { _main ->
             val temp = _main.temp
             temp?.let { _temp ->
-                txtCurrentTemp.text = _temp.tempFormatter()
+                txtCurrentTemp.text = _temp.tempToCentigrade()
             }
         }
         response.weather?.let { _listWeather ->
@@ -167,7 +173,7 @@ class MainFragment : Fragment(), INotifyRecycler, MainContract.View, IDownloaded
         val mBuilder = AlertDialog.Builder(activity).setView(mDialogView).setCancelable(false).show()
         val textFontLightx = Typeface.createFromAsset(activity!!.assets, "fonts/MontserratLight.ttf")
         mDialogView.txtRateApp.typeface = textFontLightx
-        mDialogView.btnRate.setOnClickListener {
+        mDialogView.btnSendRate.setOnClickListener {
             prefs.edit().putBoolean("rated",true).apply()
             mBuilder.dismiss()
             presenter.rateApp()

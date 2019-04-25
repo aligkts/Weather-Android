@@ -15,14 +15,11 @@ import com.aligkts.weatherapp.data.dto.weatherbylocation.Clouds
 import com.aligkts.weatherapp.data.dto.weatherbylocation.Main
 import com.aligkts.weatherapp.data.dto.weatherbylocation.WeatherItem
 import com.aligkts.weatherapp.data.dto.weatherbylocation.Wind
-import com.aligkts.weatherapp.util.DownloadImage
 import com.aligkts.weatherapp.data.network.model.ModelResponse
 import com.aligkts.weatherapp.presenter.DetailContract
 import com.aligkts.weatherapp.presenter.DetailPresenter
-import com.aligkts.weatherapp.util.Constant
-import com.aligkts.weatherapp.util.hideKeyboard
+import com.aligkts.weatherapp.util.*
 import com.aligkts.weatherapp.view.ui.adapter.DetailAdapter
-import com.aligkts.weatherapp.util.tempFormatter
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.android.synthetic.main.fragment_weather_detail.*
 
@@ -37,7 +34,7 @@ class WeatherDetailFragment : Fragment(), DetailContract.View, IDownloadedImageB
         container?.let {
             it.hideKeyboard()
         }
-        presenter = DetailPresenter(this)
+        presenter = DetailPresenter(activity!!.applicationContext,this)
         return inflater.inflate(R.layout.fragment_weather_detail, container, false)
     }
 
@@ -73,7 +70,7 @@ class WeatherDetailFragment : Fragment(), DetailContract.View, IDownloadedImageB
         }
         main?.let { _main ->
             txtCurrentTempDetail.text = _main.temp?.let { _temp ->
-                _temp.tempFormatter()
+                _temp.tempToCentigrade()
             }
             txtHumidity.text = _main.humidity.toString()
         }

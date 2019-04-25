@@ -24,5 +24,4 @@ class MainWebviewFragment : Fragment() {
         mainWebview.settings.useWideViewPort = true
     }
 
-
 }

@@ -15,6 +15,6 @@ interface ApiHelper {
     fun getWeatherByLatLng(@Query("lat") lat: Double?,
                            @Query("lon") lon: Double?,
                            @Query("APPID") appID: String,
-                           @Query("units") units: String): Call<ModelResponse>
-
+                           @Query("units") units: String,
+                           @Query("lang") lang: String): Call<ModelResponse>
 }

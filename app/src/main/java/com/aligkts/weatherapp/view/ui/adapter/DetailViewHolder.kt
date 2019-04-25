@@ -13,7 +13,7 @@ import com.aligkts.weatherapp.data.network.model.ModelResponse
 import com.aligkts.weatherapp.util.Constant.Companion.API_IMAGE_BASE_URL
 import com.aligkts.weatherapp.util.DownloadImage
 import com.aligkts.weatherapp.util.dateDoDay
-import com.aligkts.weatherapp.util.tempFormatter
+import com.aligkts.weatherapp.util.tempToCentigrade
 
 class DetailViewHolder(viewGroup: ViewGroup) :
         RecyclerView.ViewHolder(
@@ -32,7 +32,7 @@ class DetailViewHolder(viewGroup: ViewGroup) :
         }
         model.main?.let { _main ->
             _main.temp?.let {_temp ->
-                txtItemTemp.text = _temp.tempFormatter()
+                txtItemTemp.text = _temp.tempToCentigrade()
             }
         }
         model.weather?.let { _list ->

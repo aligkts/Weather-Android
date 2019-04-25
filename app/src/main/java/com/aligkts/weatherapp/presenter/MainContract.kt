@@ -25,6 +25,7 @@ interface MainContract {
         fun getBookmarkListFromDb()
         fun getLatLngResponse(latLng: LatLng)
         fun rateApp()
+        fun getDeviceLanguage()
     }
 
 }

@@ -1,6 +1,37 @@
 <resources>
     <string name="app_name">Weather App</string>
 
+
+    <string name="map_api_key">AIzaSyDN37Ds-_OZtzTT4G2OMT0EvdQUntqsi3k</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="table_name">Favorites</string>
+    <string name="column_id">id</string>
+    <string name="column_lat">lat</string>
+    <string name="column_lon">lon</string>
+    <string name="alert_messade_add_location">Bu lokasyonu eklemek istediğinize emin misiniz?</string>
+    <string name="alert_button_negative">Hayır</string>
+    <string name="alert_button_positive">Evet</string>
+    <string name="warning_play_services">Play Service\'ye bağlanılamıyor</string>
+    <string name="permission_message">Uygulama hava durumunu göstermek için konumunuza ihtiyaç duyuyor</string>
+    <string name="settings">Ayarlar</string>
+    <string name="scheme">package</string>
+    <string name="imageType">.png</string>
+    <string name="alert_message_delete_location">Bu lokasyonu silmek istediğinize emin misiniz?</string>
+    <string name="exit">Çıkış</string>
+    <string name="contentDescriptionContent">icon</string>
+    <string name="dummy_current_temp">14 C</string>
+    <string name="dummy_current_loc">Kağıthane</string>
+    <string name="dummy_humidity">100%</string>
+    <string name="dummy_rain_possibility">20</string>
+    <string name="dummy_wind_speed">4</string>
+    <string name="place_input_hint">Görmek istediğiniz lokasyonu giriniz</string>
+    <string name="dummy_item_title">Dufresne</string>
+    <string name="column_date">date</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="rate_us_message">Uygulamamızı değerlendirmek ister misiniz?</string>
+    <string name="send">Gönder</string>
+
 </resources>

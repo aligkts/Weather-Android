@@ -24,6 +24,7 @@ interface MainContract {
         fun navigateToWeatherDetail()
         fun getBookmarkListFromDb()
         fun getLatLngResponse(latLng: LatLng)
+        fun rateApp()
     }
 
 }

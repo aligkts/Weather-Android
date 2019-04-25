@@ -6,8 +6,10 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
@@ -29,8 +31,8 @@ import com.aligkts.weatherapp.presenter.MainPresenter
 import com.aligkts.weatherapp.view.ui.adapter.FavoritesAdapter
 import com.aligkts.weatherapp.util.Constant.Companion.API_IMAGE_BASE_URL
 import com.aligkts.weatherapp.util.tempFormatter
-import com.aligkts.weatherapp.util.toast
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.android.synthetic.main.custom_alert_dialog_rate_app.view.*
 import kotlinx.android.synthetic.main.fragment_main.*
 
 class MainFragment : Fragment(), INotifyRecycler, MainContract.View, IDownloadedImageBitmap {
@@ -41,6 +43,8 @@ class MainFragment : Fragment(), INotifyRecycler, MainContract.View, IDownloaded
     private var mAdapter = FavoritesAdapter(ArrayList(), this)
     private lateinit var presenter: MainPresenter
     private var searchText= ""
+    private val prefs by lazy { PreferenceManager.getDefaultSharedPreferences(activity) }
+    private val appRated by lazy { prefs.getBoolean("rated", false) }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         presenter = MainPresenter(activity!!.applicationContext, this)
@@ -57,6 +61,9 @@ class MainFragment : Fragment(), INotifyRecycler, MainContract.View, IDownloaded
         } else {
             // Permission has already been granted
             presenter.getCurrentLocationCoordFromUser()
+            if (!appRated) {
+                showRateDialog()
+            }
         }
         currentPanel.setOnClickListener {
             presenter.navigateToWeatherDetail()
@@ -155,6 +162,21 @@ class MainFragment : Fragment(), INotifyRecycler, MainContract.View, IDownloaded
         imgWeatherIcon.setImageBitmap(bitmap)
     }
 
+    private fun showRateDialog() {
+        val mDialogView = LayoutInflater.from(activity).inflate(R.layout.custom_alert_dialog_rate_app,null)
+        val mBuilder = AlertDialog.Builder(activity).setView(mDialogView).setCancelable(false).show()
+        val textFontLightx = Typeface.createFromAsset(activity!!.assets, "fonts/MontserratLight.ttf")
+        mDialogView.txtRateApp.typeface = textFontLightx
+        mDialogView.btnRate.setOnClickListener {
+            prefs.edit().putBoolean("rated",true).apply()
+            mBuilder.dismiss()
+            presenter.rateApp()
+        }
+        mDialogView.imgCancelDialog.setOnClickListener {
+            mBuilder.dismiss()
+        }
+    }
+
     private fun showAlertDialogForPermissionDeniedWithCheck() = AlertDialog.Builder(activity!!)
             .setMessage(getString(R.string.permission_message))
             .setPositiveButton(getString(R.string.settings)) { dialog, which ->
@@ -171,6 +193,9 @@ class MainFragment : Fragment(), INotifyRecycler, MainContract.View, IDownloaded
         when (requestCode) {
             LOCATION_REQUEST_CODE -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if (!appRated) {
+                        showRateDialog()
+                    }
                     presenter.getCurrentLocationCoordFromUser()
                 } else if (!shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) ||
                         !shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION)) {

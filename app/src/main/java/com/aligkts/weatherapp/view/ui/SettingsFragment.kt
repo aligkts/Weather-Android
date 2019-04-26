@@ -48,12 +48,10 @@ class SettingsFragment : Fragment() {
             UnitType.Imperial.toString() -> {
                 switchHeatUnit.isChecked = true
                 switchHeatUnit.text = " \u2109"
-                //switchHeatUnit.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_fahrenheit, 0, 0, 0)
             }
             UnitType.Metric.toString() -> {
                 switchHeatUnit.isChecked = false
                 switchHeatUnit.text = "C"+ 0x00B0.toChar()
-                //switchHeatUnit.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_celsius, 0, 0, 0)
             }
         }
     }

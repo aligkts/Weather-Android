@@ -19,6 +19,9 @@
         <action
             android:id="@+id/action_main_to_viewpager"
             app:destination="@id/viewPagerFragment" />
+        <action
+            android:id="@+id/action_main_to_settings"
+            app:destination="@id/settingsFragment" />
     </fragment>
     <fragment
         android:id="@+id/weatherDetailFragment"
@@ -35,4 +38,9 @@
         android:name="com.aligkts.weatherapp.view.ui.viewpager.ViewPagerFragment"
         android:label="fragment_view_pager"
         tools:layout="@layout/fragment_view_pager" />
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.aligkts.weatherapp.view.ui.SettingsFragment"
+        android:label="fragment_settings"
+        tools:layout="@layout/fragment_settings" />
 </navigation>

@@ -3,6 +3,7 @@ package com.aligkts.weatherapp.view.ui
 
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -65,12 +66,16 @@ class WeatherDetailFragment : Fragment(), DetailContract.View, IDownloadedImageB
                                           clouds: Clouds?,
                                           wind: Wind?,
                                           weather: List<WeatherItem?>?) {
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
         name?.let { _name ->
             txtCurrentLocDetail.text = _name
         }
         main?.let { _main ->
-            txtCurrentTempDetail.text = _main.temp?.let { _temp ->
-                _temp.tempToCentigrade()
+            _main.temp?.let {_temp ->
+                when(prefs.getString("unitType", "Metric")) {
+                    UnitType.Metric.toString() -> txtCurrentTempDetail.text = _temp.tempToCentigrade()
+                    UnitType.Imperial.toString() -> txtCurrentTempDetail.text = _temp.tempToFahrenheit()
+                }
             }
             txtHumidity.text = _main.humidity.toString()
         }
@@ -90,8 +95,10 @@ class WeatherDetailFragment : Fragment(), DetailContract.View, IDownloadedImageB
         }
     }
 
-    override fun sendDownloadedBitmap(bitmap: Bitmap) {
-        imgWeatherIconDetail.setImageBitmap(bitmap)
+    override fun sendDownloadedBitmap(bitmap: Bitmap?) {
+        bitmap?.let { _bitmap ->
+            imgWeatherIconDetail.setImageBitmap(_bitmap)
+        }
     }
 
     override fun getForecastModelResponse(list: ArrayList<ModelResponse>) {

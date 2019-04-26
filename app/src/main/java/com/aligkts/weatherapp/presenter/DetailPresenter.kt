@@ -29,12 +29,13 @@ class DetailPresenter(context: Context,private var mView: DetailContract.View) :
     }
 
     override fun getResponseWithoutRetrofitByLatLng(latLng: LatLng) {
+        val unitType = prefs.getString("unitType", "Metric")
         asyncTaskRequest.listener = this
         asyncTaskRequest.execute(API_FORECAST_BASE_URL + "lat=" +
                                           latLng.latitude +
                                           "&lon=" + latLng.longitude +
                                           "&&APPID=" + weatherAppId +
-                                          "&units="+ UnitType.Metric.toString()+
+                                          "&units="+ unitType+
                                           "&lang="+language)
     }
 

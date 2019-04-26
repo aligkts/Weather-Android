@@ -3,6 +3,7 @@ package com.aligkts.weatherapp.view.ui.adapter
 import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Bitmap
+import android.preference.PreferenceManager
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -17,7 +18,9 @@ import com.aligkts.weatherapp.util.DownloadImage
 import com.aligkts.weatherapp.data.INotifyRecycler
 import com.aligkts.weatherapp.data.SingletonModel
 import com.aligkts.weatherapp.util.Constant.Companion.API_IMAGE_BASE_URL
+import com.aligkts.weatherapp.util.UnitType
 import com.aligkts.weatherapp.util.tempToCentigrade
+import com.aligkts.weatherapp.util.tempToFahrenheit
 
 class FavoritesViewHolder(viewGroup: ViewGroup) :
         RecyclerView.ViewHolder(
@@ -31,11 +34,15 @@ class FavoritesViewHolder(viewGroup: ViewGroup) :
     private val imgBookmarkItem by lazy { itemView.findViewById<ImageView>(R.id.imgBookmarkItem) }
 
     fun bindTo(context: Context, model: ModelResponse, listener: INotifyRecycler) {
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
         txtItemTitle.text = model.name
         model.main?.let {_main ->
             val temp = _main.temp
             temp?.let {_temp ->
-                txtItemTemp.text = _temp.tempToCentigrade()
+                when(prefs.getString("unitType", "Metric")) {
+                    UnitType.Metric.toString() -> txtItemTemp.text = _temp.tempToCentigrade()
+                    UnitType.Imperial.toString() -> txtItemTemp.text = _temp.tempToFahrenheit()
+                }
             }
         }
         model.weather?.let { _listWeather ->
@@ -62,8 +69,10 @@ class FavoritesViewHolder(viewGroup: ViewGroup) :
         }
     }
 
-    override fun sendDownloadedBitmap(bitmap: Bitmap) {
-        imgBookmarkItem.setImageBitmap(bitmap)
+    override fun sendDownloadedBitmap(bitmap: Bitmap?) {
+        bitmap?.let { _bitmap ->
+            imgBookmarkItem.setImageBitmap(_bitmap)
+        }
     }
 
 }

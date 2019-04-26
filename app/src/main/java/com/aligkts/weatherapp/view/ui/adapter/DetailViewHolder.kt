@@ -2,6 +2,7 @@ package com.aligkts.weatherapp.view.ui.adapter
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.preference.PreferenceManager
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -10,10 +11,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.aligkts.weatherapp.R
 import com.aligkts.weatherapp.data.IDownloadedImageBitmap
 import com.aligkts.weatherapp.data.network.model.ModelResponse
+import com.aligkts.weatherapp.util.*
 import com.aligkts.weatherapp.util.Constant.Companion.API_IMAGE_BASE_URL
-import com.aligkts.weatherapp.util.DownloadImage
-import com.aligkts.weatherapp.util.dateDoDay
-import com.aligkts.weatherapp.util.tempToCentigrade
 
 class DetailViewHolder(viewGroup: ViewGroup) :
         RecyclerView.ViewHolder(
@@ -27,12 +26,16 @@ class DetailViewHolder(viewGroup: ViewGroup) :
     private val imgBookmarkItem by lazy { itemView.findViewById<ImageView>(R.id.imgBookmarkItem) }
 
     fun bindTo(context: Context, model: ModelResponse) {
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
         model.dt_txt?.let { _datetime ->
             txtItemTitle.text = _datetime.dateDoDay()
         }
         model.main?.let { _main ->
             _main.temp?.let {_temp ->
-                txtItemTemp.text = _temp.tempToCentigrade()
+                when(prefs.getString("unitType", "Metric")) {
+                    UnitType.Metric.toString() -> txtItemTemp.text = _temp.tempToCentigrade()
+                    UnitType.Imperial.toString() -> txtItemTemp.text = _temp.tempToFahrenheit()
+                }
             }
         }
         model.weather?.let { _list ->
@@ -44,8 +47,10 @@ class DetailViewHolder(viewGroup: ViewGroup) :
         }
     }
 
-    override fun sendDownloadedBitmap(bitmap: Bitmap) {
-        imgBookmarkItem.setImageBitmap(bitmap)
+    override fun sendDownloadedBitmap(bitmap: Bitmap?) {
+        bitmap?.let { _bitmap ->
+            imgBookmarkItem.setImageBitmap(_bitmap)
+        }
     }
 
 }

@@ -11,17 +11,18 @@
         android:label="fragment_main"
         tools:layout="@layout/fragment_main">
         <action
-            android:id="@+id/action_main_to_detail"
-            app:destination="@id/weatherDetailFragment" />
+                android:id="@+id/action_main_to_detail"
+                app:destination="@id/weatherDetailFragment"/>
         <action
-            android:id="@+id/action_main_to_add_location"
-            app:destination="@id/addLocationFragment" />
+                android:id="@+id/action_main_to_add_location"
+                app:destination="@id/addLocationFragment" app:enterAnim="@anim/fade_in"/>
         <action
-            android:id="@+id/action_main_to_viewpager"
-            app:destination="@id/viewPagerFragment" />
+                android:id="@+id/action_main_to_viewpager"
+                app:destination="@+id/viewPagerFragment"
+        />
         <action
-            android:id="@+id/action_main_to_settings"
-            app:destination="@id/settingsFragment" />
+                android:id="@+id/action_main_to_settings"
+                app:destination="@id/settingsFragment" app:enterAnim="@anim/bounce"/>
     </fragment>
     <fragment
         android:id="@+id/weatherDetailFragment"

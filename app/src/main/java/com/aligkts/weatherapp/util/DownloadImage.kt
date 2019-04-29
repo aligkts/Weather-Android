@@ -22,7 +22,9 @@ class DownloadImage(private var listener: IDownloadedImageBitmap) : AsyncTask<St
     }
 
     override fun onPostExecute(result: Bitmap) {
-        listener.sendDownloadedBitmap(result)
+        result?.let { _resultBitmap ->
+            listener.sendDownloadedBitmap(_resultBitmap)
+        }
     }
 
 }

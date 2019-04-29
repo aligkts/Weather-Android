@@ -22,16 +22,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.aligkts.weatherapp.R
 import com.aligkts.weatherapp.data.IDownloadedImageBitmap
 import com.aligkts.weatherapp.data.dto.weatherbylocation.Coord
-import com.aligkts.weatherapp.util.DownloadImage
 import com.aligkts.weatherapp.data.INotifyRecycler
 import com.aligkts.weatherapp.data.SingletonModel
 import com.aligkts.weatherapp.data.network.model.ModelResponse
 import com.aligkts.weatherapp.presenter.MainContract
 import com.aligkts.weatherapp.presenter.MainPresenter
+import com.aligkts.weatherapp.util.*
 import com.aligkts.weatherapp.view.ui.adapter.FavoritesAdapter
 import com.aligkts.weatherapp.util.Constant.Companion.API_IMAGE_BASE_URL
-import com.aligkts.weatherapp.util.tempToCentigrade
-import com.aligkts.weatherapp.util.toast
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.android.synthetic.main.custom_alert_dialog_rate_app.view.*
 import kotlinx.android.synthetic.main.fragment_main.*
@@ -46,7 +44,6 @@ class MainFragment : Fragment(), INotifyRecycler, MainContract.View, IDownloaded
     private var searchText= ""
     private val prefs by lazy { PreferenceManager.getDefaultSharedPreferences(activity) }
     private val appRated by lazy { prefs.getBoolean("rated", false) }
-    private val selectedHeatUnit by lazy { prefs.getString("heat", "c") }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         presenter = MainPresenter(activity!!.applicationContext, this)
@@ -151,7 +148,10 @@ class MainFragment : Fragment(), INotifyRecycler, MainContract.View, IDownloaded
         response.main?.let { _main ->
             val temp = _main.temp
             temp?.let { _temp ->
-                txtCurrentTemp.text = _temp.tempToCentigrade()
+                when(prefs.getString("unitType", "Metric")) {
+                    UnitType.Metric.toString() -> txtCurrentTemp.text = _temp.tempToCentigrade()
+                    UnitType.Imperial.toString() -> txtCurrentTemp.text = _temp.tempToFahrenheit()
+                }
             }
         }
         response.weather?.let { _listWeather ->
@@ -164,8 +164,10 @@ class MainFragment : Fragment(), INotifyRecycler, MainContract.View, IDownloaded
         progressLoading.visibility = View.GONE
     }
 
-    override fun sendDownloadedBitmap(bitmap: Bitmap) {
-        imgWeatherIcon.setImageBitmap(bitmap)
+    override fun sendDownloadedBitmap(bitmap: Bitmap?) {
+        bitmap?.let {_bitmap ->
+            imgWeatherIcon.setImageBitmap(_bitmap)
+        }
     }
 
     private fun showRateDialog() {

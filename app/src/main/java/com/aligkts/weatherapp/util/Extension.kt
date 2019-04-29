@@ -19,13 +19,12 @@ fun View.hideKeyboard() {
     inputMethodManager.hideSoftInputFromWindow(windowToken, 0)
 }
 
-fun Double.tempFormatter(): String {
-    val centigrade = (this.toInt().minus(32)).div(1.8000)
-    return Math.round(centigrade).toString() + 0x00B0.toChar()
-}
-
 fun Double.tempToCentigrade(): String {
     return Math.round(this).toString() + 0x00B0.toChar()
+}
+
+fun Double.tempToFahrenheit(): String {
+    return Math.round(this).toString() + " \u2109"
 }
 
 infix fun String.toast(context: Context) {

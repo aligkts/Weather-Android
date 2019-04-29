@@ -33,6 +33,7 @@ class MainPresenter(private var context: Context,private var mView: MainContract
     private val dataListFavoritesFromRequest = ArrayList<ModelResponse>()
     private val prefs by lazy { PreferenceManager.getDefaultSharedPreferences(context) }
     private val language by lazy { prefs.getString("language","en") }
+    lateinit var currentUnitType: String
 
     override fun getDeviceLanguage() {
         val lang = Locale.getDefault().language
@@ -87,13 +88,14 @@ class MainPresenter(private var context: Context,private var mView: MainContract
     }
 
     override fun getBookmarkListFromDb() {
+        currentUnitType = prefs.getString("unitType", "Metric")
         val bookmarkList = db.readFavoritesList()
         if (bookmarkList.isNotEmpty()) {
             for (i in 0 until bookmarkList.size) {
                 proxy.getResponseFromApiByLatLng(LatLng(bookmarkList[i].latitude,
                                                         bookmarkList[i].longitude),
                                                         language,
-                                                        UnitType.Metric.toString()) { isSuccess, response, message ->
+                                                        currentUnitType) { isSuccess, response, message ->
                     if (isSuccess) {
                         response?.let { _response ->
                             dataListFavoritesFromRequest.add(_response)
@@ -107,9 +109,10 @@ class MainPresenter(private var context: Context,private var mView: MainContract
     }
 
     override fun getLatLngResponse(latLng: LatLng) {
+        currentUnitType = prefs.getString("unitType", "Metric")
         proxy.getResponseFromApiByLatLng(latLng,
                                          language,
-                                         UnitType.Metric.toString()) {isSuccess, response, message ->
+                                         currentUnitType) {isSuccess, response, message ->
             if (isSuccess) {
                 response?.let { _response ->
                     mView.getCurrentParsedModel( _response)

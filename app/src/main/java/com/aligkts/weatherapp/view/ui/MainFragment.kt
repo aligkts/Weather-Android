@@ -55,6 +55,9 @@ class MainFragment : Fragment(), INotifyRecycler, MainContract.View, IDownloaded
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        searchView.post {
+            searchView.setQuery("",false)
+        }
         if (ContextCompat.checkSelfPermission(activity!!,
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(permissions, LOCATION_REQUEST_CODE)

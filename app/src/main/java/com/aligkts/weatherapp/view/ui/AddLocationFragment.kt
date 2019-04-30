@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import androidx.appcompat.app.AlertDialog
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.aligkts.weatherapp.R
 import com.aligkts.weatherapp.data.database.DBConnectionManager
@@ -22,6 +22,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.android.synthetic.main.fragment_add_location.*
+import com.google.android.material.bottomsheet.BottomSheetDialog
 
 
 class AddLocationFragment : Fragment(), OnMapReadyCallback, AddLocationContract.View {
@@ -49,18 +50,21 @@ class AddLocationFragment : Fragment(), OnMapReadyCallback, AddLocationContract.
         }
         edtPlace.setOnKeyListener { view, keyCode, event ->
             if (keyCode == EditorInfo.IME_ACTION_SEARCH ||
-                    keyCode == EditorInfo.IME_ACTION_DONE ||
-                    event.action == KeyEvent.ACTION_DOWN &&
-                    event.keyCode == KeyEvent.KEYCODE_ENTER
-            ) {
+                keyCode == EditorInfo.IME_ACTION_DONE ||
+                event.action == KeyEvent.ACTION_DOWN &&
+                event.keyCode == KeyEvent.KEYCODE_ENTER) {
                 val searchedLatLng = presenter.findSearchedLocation(edtPlace.text.toString())
-                zoomLocation(mGoogleMap, searchedLatLng, 15F)
+                searchedLatLng?.let {_latlng ->
+                    zoomLocation(mGoogleMap, _latlng, 15F)
+                }
             }
             false
         }
         btnFindPlace.setOnClickListener {
             val searchedLatLng = presenter.findSearchedLocation(edtPlace.text.toString())
-            zoomLocation(mGoogleMap, searchedLatLng, 15F)
+            searchedLatLng?.let {_latlng ->
+                zoomLocation(mGoogleMap, _latlng, 15F)
+            }
         }
     }
 
@@ -76,20 +80,30 @@ class AddLocationFragment : Fragment(), OnMapReadyCallback, AddLocationContract.
     override fun onMapReady(googleMap: GoogleMap) {
         mGoogleMap = googleMap
         zoomLocation(mGoogleMap, LatLng(currentLat, currentLng), 15F)
-        mGoogleMap.setOnMapLongClickListener {
-            val marker = addMarkerToMap(mGoogleMap, LatLng(it.latitude, it.longitude))
-            AlertDialog.Builder(activity!!)
-                    .setMessage(getString(R.string.alert_messade_add_location))
-                    .setCancelable(false)
-                    .setNegativeButton(getString(R.string.alert_button_negative)) { dialog, which ->
-                        marker?.let { _marker ->
-                            _marker.remove()
-                        }
-                        dialog.dismiss()
-                    }
-                    .setPositiveButton(getString(R.string.alert_button_positive)) { dialog, which ->
-                        presenter.getResponseFromApiByLatLng(LatLng(it.latitude, it.longitude))
-                    }.show()
+        mGoogleMap.setOnMapLongClickListener {_latLng ->
+            val marker = addMarkerToMap(mGoogleMap, LatLng(_latLng.latitude, _latLng.longitude))
+            val dialog = BottomSheetDialog(activity!!)
+            val view = layoutInflater.inflate(R.layout.bottom_sheet,null)
+            val cancel = view.findViewById<TextView>(R.id.txtCancel)
+            cancel.setOnClickListener {
+                marker?.let { _marker ->
+                    _marker.remove()
+                }
+                dialog.dismiss()
+            }
+            val add = view.findViewById<TextView>(R.id.txtOkey)
+            add.setOnClickListener {
+                presenter.getResponseFromApiByLatLng(LatLng(_latLng.latitude, _latLng.longitude))
+                dialog.dismiss()
+            }
+            dialog.setContentView(view)
+            dialog.setCancelable(true)
+            dialog.show()
+            dialog.setOnCancelListener {
+                marker?.let { _marker ->
+                    _marker.remove()
+                }
+            }
         }
         if (favoritesList.isNotEmpty()) {
             for (i in 0 until favoritesList.size) {

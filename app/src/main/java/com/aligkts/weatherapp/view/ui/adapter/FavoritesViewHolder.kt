@@ -54,8 +54,8 @@ class FavoritesViewHolder(viewGroup: ViewGroup) :
         itemView.setOnLongClickListener {
             AlertDialog.Builder(context)
                 .setMessage(context.getString(R.string.alert_message_delete_location))
-                .setNegativeButton(context.getString(R.string.alert_button_negative)) { dialog, which -> dialog.dismiss() }
-                .setPositiveButton(context.getString(R.string.alert_button_positive)) { dialog, which ->
+                .setNegativeButton(context.getString(R.string.button_negative)) { dialog, which -> dialog.dismiss() }
+                .setPositiveButton(context.getString(R.string.button_positive)) { dialog, which ->
                     model.id?.let {
                         DBConnectionManager(context).deleteClickedItem(it)
                         listener.itemRemoved(it)

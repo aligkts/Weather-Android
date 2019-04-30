@@ -17,9 +17,10 @@
                 android:id="@+id/action_main_to_add_location"
                 app:destination="@id/addLocationFragment" app:enterAnim="@anim/fade_in"/>
         <action
-                android:id="@+id/action_main_to_viewpager"
-                app:destination="@+id/viewPagerFragment"
-        />
+            android:id="@+id/action_main_to_viewpager"
+            app:destination="@+id/viewPagerFragment"
+            app:enterAnim="@anim/popup_show"
+            app:popExitAnim="@anim/popup_hide" />
         <action
                 android:id="@+id/action_main_to_settings"
                 app:destination="@id/settingsFragment" app:enterAnim="@anim/bounce"/>

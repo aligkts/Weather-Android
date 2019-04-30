@@ -6,8 +6,8 @@
     <string name="column_lat" translatable="false">lat</string>
     <string name="column_lon" translatable="false">lon</string>
     <string name="alert_messade_add_location">Bu lokasyonu eklemek istediğinize emin misiniz?</string>
-    <string name="alert_button_negative">Hayır</string>
-    <string name="alert_button_positive">Evet</string>
+    <string name="button_negative">Hayır</string>
+    <string name="button_positive">Evet</string>
     <string name="warning_play_services">Play Service\'ye bağlanılamıyor</string>
     <string name="permission_message">Uygulama hava durumunu göstermek için konumunuza ihtiyaç duyuyor</string>
     <string name="settings">Ayarlar</string>
@@ -26,4 +26,5 @@
     <string name="column_date" translatable="false">date</string>
     <string name="rate_us_message">Uygulamamızı değerlendirmek ister misiniz?</string>
     <string name="send">Gönder</string>
+    <string name="location_not_found">Girdiğiniz lokasyon bulunamadı</string>
 </resources>

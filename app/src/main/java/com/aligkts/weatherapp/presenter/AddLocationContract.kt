@@ -14,7 +14,7 @@ interface AddLocationContract {
         fun getCurrentSingletonData()
         fun getResponseFromApiByLatLng(latLng: LatLng)
         fun checkWhetherGoogleServicesAvailable() : Boolean
-        fun findSearchedLocation(location: String) : LatLng
+        fun findSearchedLocation(location: String) : LatLng?
     }
 
 }

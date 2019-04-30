@@ -83,13 +83,18 @@ class AddLocationPresenter(private var context: Context, private var mView: AddL
         return false
     }
 
-    override fun findSearchedLocation(location: String): LatLng {
+    override fun findSearchedLocation(location: String): LatLng? {
         val geocoder = Geocoder(context)
         val list = geocoder.getFromLocationName(location, 1) as List<Address>
-        val address = list.first()
-        val latitude = address.latitude
-        val longitude = address.longitude
-        return LatLng(latitude,longitude)
+        if(list.isNotEmpty()) {
+            val address = list.first()
+            val latitude = address.latitude
+            val longitude = address.longitude
+            return LatLng(latitude,longitude)
+        } else {
+            context.getString(R.string.location_not_found) toast (context)
+        }
+       return null
     }
 
 }

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="alert_messade_add_location">Are you sure you want to add this location to your bookmark?</string>
-    <string name="alert_button_negative">No</string>
-    <string name="alert_button_positive">Yes</string>
+    <string name="button_negative">No</string>
+    <string name="button_positive">Yes</string>
     <string name="warning_play_services">Play Service is not available</string>
     <string name="permission_message">We need your permission to get your location</string>
     <string name="settings">Settings</string>
@@ -12,4 +12,6 @@
     <string name="dummy_current_loc">Kagithane</string>
     <string name="place_input_hint">Enter the location you want to see</string>
     <string name="send">Send</string>
+    <string name="location_not_found">We could not find this location</string>
+
 </resources>

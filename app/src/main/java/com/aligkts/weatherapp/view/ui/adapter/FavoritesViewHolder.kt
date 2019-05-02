@@ -11,35 +11,31 @@ import android.widget.TextView
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.aligkts.weatherapp.R
+import com.aligkts.weatherapp.data.MemoryCache
 import com.aligkts.weatherapp.data.IDownloadedImageBitmap
 import com.aligkts.weatherapp.data.database.DBConnectionManager
 import com.aligkts.weatherapp.data.network.model.ModelResponse
-import com.aligkts.weatherapp.util.DownloadImage
 import com.aligkts.weatherapp.data.INotifyRecycler
 import com.aligkts.weatherapp.data.SingletonModel
+import com.aligkts.weatherapp.util.*
 import com.aligkts.weatherapp.util.Constant.Companion.API_IMAGE_BASE_URL
-import com.aligkts.weatherapp.util.UnitType
-import com.aligkts.weatherapp.util.tempToCentigrade
-import com.aligkts.weatherapp.util.tempToFahrenheit
 
 class FavoritesViewHolder(viewGroup: ViewGroup) :
-        RecyclerView.ViewHolder(
-                LayoutInflater.from(viewGroup.context).inflate(
-                        R.layout.item_bookmark,
-                        viewGroup,
-                        false)), IDownloadedImageBitmap {
+        RecyclerView.ViewHolder(LayoutInflater.from(viewGroup.context)
+            .inflate(R.layout.item_bookmark, viewGroup, false)), IDownloadedImageBitmap {
 
     private val txtItemTitle by lazy { itemView.findViewById<TextView>(R.id.txtItemTitle) }
     private val txtItemTemp by lazy { itemView.findViewById<TextView>(R.id.txtItemTemp) }
     private val imgBookmarkItem by lazy { itemView.findViewById<ImageView>(R.id.imgBookmarkItem) }
+    lateinit var iconCode: String
 
     fun bindTo(context: Context, model: ModelResponse, listener: INotifyRecycler) {
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)
         txtItemTitle.text = model.name
-        model.main?.let {_main ->
+        model.main?.let { _main ->
             val temp = _main.temp
-            temp?.let {_temp ->
-                when(prefs.getString("unitType", "Metric")) {
+            temp?.let { _temp ->
+                when (prefs.getString("unitType", "Metric")) {
                     UnitType.Metric.toString() -> txtItemTemp.text = _temp.tempToCentigrade()
                     UnitType.Imperial.toString() -> txtItemTemp.text = _temp.tempToFahrenheit()
                 }
@@ -47,8 +43,16 @@ class FavoritesViewHolder(viewGroup: ViewGroup) :
         }
         model.weather?.let { _listWeather ->
             _listWeather.first()?.let { _index ->
-                val url =API_IMAGE_BASE_URL.plus(_index.icon.toString()).plus(context.getString(R.string.imageType))
-                DownloadImage(this).execute(url)
+                iconCode = _index.icon.toString()
+                val url = API_IMAGE_BASE_URL.plus(iconCode).plus(context.getString(R.string.imageType))
+                MemoryCache.instance?.let { _cache ->
+                    val bitmapFromCache = _cache.getLru().get(iconCode)
+                    if(bitmapFromCache != null) {
+                        imgBookmarkItem.setImageBitmap(bitmapFromCache)
+                    } else {
+                        DownloadImage(this).execute(url)
+                    }
+                }
             }
         }
         itemView.setOnLongClickListener {
@@ -71,7 +75,10 @@ class FavoritesViewHolder(viewGroup: ViewGroup) :
 
     override fun sendDownloadedBitmap(bitmap: Bitmap?) {
         bitmap?.let { _bitmap ->
-            imgBookmarkItem.setImageBitmap(_bitmap)
+            MemoryCache.instance?.let { _cache ->
+               _cache.getLru().put(iconCode,_bitmap)
+                imgBookmarkItem.setImageBitmap(_bitmap)
+            }
         }
     }
 

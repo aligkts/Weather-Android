@@ -24,9 +24,12 @@ class DetailViewHolder(viewGroup: ViewGroup) :
     private val txtItemTitle by lazy { itemView.findViewById<TextView>(R.id.txtItemTitle) }
     private val txtItemTemp by lazy { itemView.findViewById<TextView>(R.id.txtItemTemp) }
     private val imgBookmarkItem by lazy { itemView.findViewById<ImageView>(R.id.imgBookmarkItem) }
+    lateinit var mapUtil: MapUtil
+    lateinit var key: String
 
     fun bindTo(context: Context, model: ModelResponse) {
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        mapUtil = MapUtil(context)
         model.dt_txt?.let { _datetime ->
             txtItemTitle.text = _datetime.dateDoDay()
         }
@@ -41,8 +44,14 @@ class DetailViewHolder(viewGroup: ViewGroup) :
         model.weather?.let { _list ->
             _list.first()?.let {_index ->
                 val weatherStatus = _index.icon.toString()
-                val url =API_IMAGE_BASE_URL.plus(weatherStatus).plus(context.getString(R.string.imageType))
-                DownloadImage(this).execute(url)
+                val url = API_IMAGE_BASE_URL.plus(weatherStatus).plus(context.getString(R.string.imageType))
+                val bitmap = mapUtil.checkIconCode(weatherStatus)
+                if (bitmap != null) {
+                    imgBookmarkItem.setImageBitmap(bitmap)
+                } else {
+                    key = weatherStatus
+                    DownloadImage(this).execute(url)
+                }
             }
         }
     }
@@ -50,6 +59,7 @@ class DetailViewHolder(viewGroup: ViewGroup) :
     override fun sendDownloadedBitmap(bitmap: Bitmap?) {
         bitmap?.let { _bitmap ->
             imgBookmarkItem.setImageBitmap(_bitmap)
+            mapUtil.addValueToMap(key,_bitmap)
         }
     }
 

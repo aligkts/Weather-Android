@@ -11,6 +11,7 @@ import android.widget.TextView
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.aligkts.weatherapp.R
+import com.aligkts.weatherapp.cache.MemoryCache
 import com.aligkts.weatherapp.data.IDownloadedImageBitmap
 import com.aligkts.weatherapp.data.database.DBConnectionManager
 import com.aligkts.weatherapp.data.network.model.ModelResponse
@@ -26,12 +27,10 @@ class FavoritesViewHolder(viewGroup: ViewGroup) :
     private val txtItemTitle by lazy { itemView.findViewById<TextView>(R.id.txtItemTitle) }
     private val txtItemTemp by lazy { itemView.findViewById<TextView>(R.id.txtItemTemp) }
     private val imgBookmarkItem by lazy { itemView.findViewById<ImageView>(R.id.imgBookmarkItem) }
-    lateinit var mapUtil: MapUtil
-    lateinit var key: String
+    lateinit var iconCode: String
 
     fun bindTo(context: Context, model: ModelResponse, listener: INotifyRecycler) {
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-        mapUtil = MapUtil(context)
         txtItemTitle.text = model.name
         model.main?.let { _main ->
             val temp = _main.temp
@@ -44,14 +43,15 @@ class FavoritesViewHolder(viewGroup: ViewGroup) :
         }
         model.weather?.let { _listWeather ->
             _listWeather.first()?.let { _index ->
-                val weatherStatus = _index.icon.toString()
-                val url = API_IMAGE_BASE_URL.plus(weatherStatus).plus(context.getString(R.string.imageType))
-                val bitmap = mapUtil.checkIconCode(weatherStatus)
-                if (bitmap != null) {
-                    imgBookmarkItem.setImageBitmap(bitmap)
-                } else {
-                    key = weatherStatus
-                    DownloadImage(this).execute(url)
+                iconCode = _index.icon.toString()
+                val url = API_IMAGE_BASE_URL.plus(iconCode).plus(context.getString(R.string.imageType))
+                MemoryCache.instance?.let {_cache ->
+                    val bitmapFromCache = _cache.getLru().get(iconCode)
+                    if(bitmapFromCache != null) {
+                        imgBookmarkItem.setImageBitmap(bitmapFromCache)
+                    } else {
+                        DownloadImage(this).execute(url)
+                    }
                 }
             }
         }
@@ -75,8 +75,10 @@ class FavoritesViewHolder(viewGroup: ViewGroup) :
 
     override fun sendDownloadedBitmap(bitmap: Bitmap?) {
         bitmap?.let { _bitmap ->
-            imgBookmarkItem.setImageBitmap(_bitmap)
-            mapUtil.addValueToMap(key,_bitmap)
+            MemoryCache.instance?.let {_cache ->
+               _cache.getLru().put(iconCode,_bitmap)
+                imgBookmarkItem.setImageBitmap(_bitmap)
+            }
         }
     }
 

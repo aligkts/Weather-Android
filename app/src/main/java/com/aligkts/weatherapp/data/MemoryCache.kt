@@ -1,4 +1,4 @@
-package com.aligkts.weatherapp.cache
+package com.aligkts.weatherapp.data
 
 import android.graphics.Bitmap
 import androidx.collection.LruCache

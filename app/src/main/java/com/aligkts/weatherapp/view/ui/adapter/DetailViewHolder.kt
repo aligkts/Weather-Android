@@ -9,7 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.aligkts.weatherapp.R
-import com.aligkts.weatherapp.cache.MemoryCache
+import com.aligkts.weatherapp.data.MemoryCache
 import com.aligkts.weatherapp.data.IDownloadedImageBitmap
 import com.aligkts.weatherapp.data.network.model.ModelResponse
 import com.aligkts.weatherapp.util.*
@@ -58,7 +58,7 @@ class DetailViewHolder(viewGroup: ViewGroup) :
 
     override fun sendDownloadedBitmap(bitmap: Bitmap?) {
         bitmap?.let { _bitmap ->
-            MemoryCache.instance?.let {_cache ->
+            MemoryCache.instance?.let { _cache ->
                 _cache.getLru().put(iconCode,_bitmap)
                 imgBookmarkItem.setImageBitmap(_bitmap)
             }

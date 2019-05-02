@@ -11,7 +11,7 @@ import android.widget.TextView
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.aligkts.weatherapp.R
-import com.aligkts.weatherapp.cache.MemoryCache
+import com.aligkts.weatherapp.data.MemoryCache
 import com.aligkts.weatherapp.data.IDownloadedImageBitmap
 import com.aligkts.weatherapp.data.database.DBConnectionManager
 import com.aligkts.weatherapp.data.network.model.ModelResponse
@@ -45,7 +45,7 @@ class FavoritesViewHolder(viewGroup: ViewGroup) :
             _listWeather.first()?.let { _index ->
                 iconCode = _index.icon.toString()
                 val url = API_IMAGE_BASE_URL.plus(iconCode).plus(context.getString(R.string.imageType))
-                MemoryCache.instance?.let {_cache ->
+                MemoryCache.instance?.let { _cache ->
                     val bitmapFromCache = _cache.getLru().get(iconCode)
                     if(bitmapFromCache != null) {
                         imgBookmarkItem.setImageBitmap(bitmapFromCache)
@@ -75,7 +75,7 @@ class FavoritesViewHolder(viewGroup: ViewGroup) :
 
     override fun sendDownloadedBitmap(bitmap: Bitmap?) {
         bitmap?.let { _bitmap ->
-            MemoryCache.instance?.let {_cache ->
+            MemoryCache.instance?.let { _cache ->
                _cache.getLru().put(iconCode,_bitmap)
                 imgBookmarkItem.setImageBitmap(_bitmap)
             }

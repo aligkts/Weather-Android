@@ -27,6 +27,7 @@ class FavoritesAdapter(var itemList: List<ModelResponse>, private var listener: 
     fun setNewList(itemList: List<ModelResponse>) {
         this.itemList = itemList
         this.dataListUnFilter = itemList as ArrayList<ModelResponse>
+        notifyDataSetChanged()
     }
 
     override fun getFilter(): Filter {

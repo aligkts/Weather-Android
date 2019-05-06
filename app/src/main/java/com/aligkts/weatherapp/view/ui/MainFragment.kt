@@ -20,19 +20,20 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.aligkts.weatherapp.R
-import com.aligkts.weatherapp.data.IDownloadedImageBitmap
+import com.aligkts.weatherapp.data.*
 import com.aligkts.weatherapp.data.dto.weatherbylocation.Coord
-import com.aligkts.weatherapp.data.INotifyRecycler
-import com.aligkts.weatherapp.data.SingletonModel
 import com.aligkts.weatherapp.data.network.model.ModelResponse
 import com.aligkts.weatherapp.presenter.MainContract
 import com.aligkts.weatherapp.presenter.MainPresenter
 import com.aligkts.weatherapp.util.*
 import com.aligkts.weatherapp.view.ui.adapter.FavoritesAdapter
 import com.aligkts.weatherapp.util.Constant.Companion.API_IMAGE_BASE_URL
+import com.aligkts.weatherapp.util.Constant.Companion.RUN_ONCE
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.android.synthetic.main.custom_alert_dialog_rate_app.view.*
 import kotlinx.android.synthetic.main.fragment_main.*
+import kotlin.collections.ArrayList
+
 
 class MainFragment : Fragment(), INotifyRecycler, MainContract.View, IDownloadedImageBitmap {
 
@@ -46,15 +47,23 @@ class MainFragment : Fragment(), INotifyRecycler, MainContract.View, IDownloaded
     private val appRated by lazy { prefs.getBoolean("rated", false) }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val view = inflater.inflate(R.layout.fragment_main, container, false)
         presenter = MainPresenter(activity!!.applicationContext, this)
         presenter.getDeviceLanguage()
         dataListFavoritesFromRequest.clear()
         presenter.getBookmarkListFromDb()
-        return inflater.inflate(R.layout.fragment_main, container, false)
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        if (RUN_ONCE) {
+            RUN_ONCE = false
+        } else {
+            weatherPanel.visibility = View.VISIBLE
+            progressLoading.visibility = View.GONE
+            presenter.setCurrentWeatherFromCache()
+        }
         searchView.post {
             searchView.setQuery("",false)
         }
@@ -121,8 +130,8 @@ class MainFragment : Fragment(), INotifyRecycler, MainContract.View, IDownloaded
     private fun setRecyclerAdapter(list: ArrayList<ModelResponse>) {
         recyclerFavorites.apply {
             layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
-            adapter = mAdapter
             mAdapter.setNewList(list)
+            adapter = mAdapter
         }
     }
 
@@ -145,9 +154,12 @@ class MainFragment : Fragment(), INotifyRecycler, MainContract.View, IDownloaded
     private fun setCurrentUiComponents(response: ModelResponse) {
         SingletonModel.instance?.let { _singleton ->
             _singleton.setCurrentList(response)
+            presenter.putCurrentWeatherToCache(response)
         }
         val location = response.name
-        txtCurrentLocation.text = location
+        txtCurrentLocation?.let {
+            txtCurrentLocation.text = location
+        }
         response.main?.let { _main ->
             val temp = _main.temp
             temp?.let { _temp ->
@@ -218,6 +230,7 @@ class MainFragment : Fragment(), INotifyRecycler, MainContract.View, IDownloaded
             }
         }
     }
+
 }
 
 

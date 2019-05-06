@@ -11,7 +11,9 @@ import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.util.Log
 import androidx.core.content.ContextCompat
+import com.aligkts.weatherapp.data.MemoryCache
 import com.aligkts.weatherapp.data.database.DBConnectionManager
 import com.aligkts.weatherapp.data.dto.weatherbylocation.Coord
 import com.aligkts.weatherapp.data.network.Proxy
@@ -34,6 +36,7 @@ class MainPresenter(private var context: Context,private var mView: MainContract
     private val prefs by lazy { PreferenceManager.getDefaultSharedPreferences(context) }
     private val language by lazy { prefs.getString("language","en") }
     lateinit var currentUnitType: String
+    private val cache by lazy { MemoryCache.instance }
 
     override fun getDeviceLanguage() {
         val lang = Locale.getDefault().language
@@ -129,5 +132,45 @@ class MainPresenter(private var context: Context,private var mView: MainContract
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         context.startActivity(intent)
     }
+
+    override fun putCurrentWeatherToCache(currentModel: ModelResponse) {
+        cache?.let {_cache ->
+            _cache.getLruCurrentWeather().put("current",currentModel)
+        }
+    }
+
+    override fun setCurrentWeatherFromCache() {
+        cache?.let { _cache ->
+            _cache.getLruCurrentWeather().get("current")?.let { _currentWeatherFromCache ->
+                mView.getCurrentParsedModel(_currentWeatherFromCache)
+            }
+        }
+    }
+
+    /*override fun setUiFromCache() {
+        cache?.let {_cache ->
+            _cache.getLruCurrentWeather().get("current")?.let {_currentWeatherFromCache ->
+                mView.getCurrentParsedModel(_currentWeatherFromCache)
+            }
+            val arrayFromCache = _cache.getLruFavoritesList().get("lastList")
+            val listFromCache = ArrayList<ModelResponse>()
+            arrayFromCache?.let {_array ->
+                for(i in 0 until _array.size) {
+                    _array[i]?.let { listFromCache.add(it) }
+                }
+                Log.i("RECYCLERVIEWBUG",""+listFromCache.size+" presenter setUiFromCache")
+                mView.setBookmarkListFromCache(listFromCache)
+            }
+        }
+    }
+
+    override fun putBookmarkListToCache(bookmarkList: ArrayList<ModelResponse>) {
+        cache?.let {_cache ->
+            val array = arrayOfNulls<ModelResponse>(bookmarkList.size)
+            bookmarkList.toArray(array)
+            _cache.getLruFavoritesList().put("lastList",array)
+            Log.i("RECYCLERVIEWBUG",""+array.size+" presenter putBookmarkListToCache")
+        }
+    }*/
 
 }

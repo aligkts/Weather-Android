@@ -35,8 +35,9 @@ class AddLocationFragment : Fragment(), OnMapReadyCallback, AddLocationContract.
     lateinit var presenter: AddLocationPresenter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val view = inflater.inflate(R.layout.fragment_add_location, container, false)
         presenter = AddLocationPresenter(activity!!, this)
-        return inflater.inflate(R.layout.fragment_add_location, container, false)
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -32,11 +32,12 @@ class WeatherDetailFragment : Fragment(), DetailContract.View, IDownloadedImageB
     lateinit var presenter: DetailPresenter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val view = inflater.inflate(R.layout.fragment_weather_detail, container, false)
         container?.let {
             it.hideKeyboard()
         }
         presenter = DetailPresenter(activity!!.applicationContext,this)
-        return inflater.inflate(R.layout.fragment_weather_detail, container, false)
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

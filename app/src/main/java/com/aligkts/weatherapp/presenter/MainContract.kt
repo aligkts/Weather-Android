@@ -26,6 +26,8 @@ interface MainContract {
         fun getLatLngResponse(latLng: LatLng)
         fun rateApp()
         fun getDeviceLanguage()
+        fun setCurrentWeatherFromCache()
+        fun putCurrentWeatherToCache(currentModel: ModelResponse)
     }
 
 }

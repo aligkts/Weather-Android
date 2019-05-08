@@ -10,24 +10,32 @@ import com.aligkts.weatherapp.util.Constant.Companion.API_FORECAST_BASE_URL
 import com.aligkts.weatherapp.util.Constant.Companion.weatherAppId
 import com.google.android.gms.maps.model.LatLng
 
-class DetailPresenter(context: Context,private var mView: DetailContract.View) : DetailContract.Presenter {
+class DetailPresenter(context: Context, private var mView: DetailContract.View) : DetailContract.Presenter {
 
     private val asyncTaskRequest by lazy { NetworkDAO() }
     private val dataListForecastFromRequest by lazy { ArrayList<ModelResponse>() }
     private val prefs by lazy { PreferenceManager.getDefaultSharedPreferences(context) }
-    private val language by lazy { prefs.getString("language","en") }
+    private val language by lazy { prefs.getString("language", "en") }
     private val cache by lazy { MemoryCache.instance }
 
     override fun getSingletonData(currentCheck: String?): ModelResponse? {
         SingletonModel.instance?.let { _model ->
             return if (currentCheck == "current_clicked") {
                 val value = _model.getCurrentList()
-                mView.setDetailHeaderComponents(value.name,value.main,value.clouds,value.wind,value.weather)
+                mView.setDetailHeaderComponents(value.name,
+                                                value.main,
+                                                value.clouds,
+                                                value.wind,
+                                                value.weather)
                 putDataListToCache(value)
                 value
             } else {
                 val value = _model.getOtherList()
-                mView.setDetailHeaderComponents(value.name,value.main,value.clouds,value.wind,value.weather)
+                mView.setDetailHeaderComponents(value.name,
+                                                value.main,
+                                                value.clouds,
+                                                value.wind,
+                                                value.weather)
                 putDataListToCache(value)
                 value
             }
@@ -54,15 +62,19 @@ class DetailPresenter(context: Context,private var mView: DetailContract.View) :
 
     override fun setUiFromCache(currentCheck: String) {
         cache?.let { _cache ->
-                val value =_cache.getLruWeatherDetail().get(currentCheck)
+                val value = _cache.getLruWeatherDetail().get(currentCheck)
                 value?.let { _value ->
-                    mView.setDetailHeaderComponents(_value.name,_value.main,_value.clouds,_value.wind,_value.weather)
+                    mView.setDetailHeaderComponents(_value.name,
+                                                    _value.main,
+                                                    _value.clouds,
+                                                    _value.wind,
+                                                    _value.weather)
                 }
         }
         cache?.let { _cache ->
             _cache.getLruForecastDetail().get("recyclerlist")?.let { _lastRecyclerList ->
                 val listFromCache = ArrayList<ModelResponse>()
-                    for (i in 0 until _lastRecyclerList.size) {
+                for (i in 0 until _lastRecyclerList.size) {
                         _lastRecyclerList[i]?.let { listFromCache.add(it) }
                     mView.getForecastModelResponse(listFromCache)
                 }

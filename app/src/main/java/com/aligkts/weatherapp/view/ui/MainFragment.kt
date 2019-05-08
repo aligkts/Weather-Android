@@ -44,7 +44,7 @@ class MainFragment : Fragment(), INotifyRecycler, MainContract.View, IDownloaded
     private var dataListFavoritesFromRequest = ArrayList<ModelResponse>()
     private val mAdapter by lazy { FavoritesAdapter(ArrayList(),this) }
     private lateinit var presenter: MainPresenter
-    private var searchText= ""
+    private var searchText = ""
     private val prefs by lazy { PreferenceManager.getDefaultSharedPreferences(activity) }
     private val appRated by lazy { prefs.getBoolean("rated", false) }
 
@@ -70,7 +70,7 @@ class MainFragment : Fragment(), INotifyRecycler, MainContract.View, IDownloaded
             presenter.setUiFromCache()
         }
         searchView.post {
-            searchView.setQuery("",false)
+            searchView.setQuery("", false)
         }
         if (ContextCompat.checkSelfPermission(activity!!,
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -189,7 +189,7 @@ class MainFragment : Fragment(), INotifyRecycler, MainContract.View, IDownloaded
     }
 
     override fun sendDownloadedBitmap(bitmap: Bitmap?) {
-        bitmap?.let {_bitmap ->
+        bitmap?.let { _bitmap ->
             imgWeatherIcon?.let {
                 it.setImageBitmap(_bitmap)
             }
@@ -197,12 +197,12 @@ class MainFragment : Fragment(), INotifyRecycler, MainContract.View, IDownloaded
     }
 
     private fun showRateDialog() {
-        val mDialogView = LayoutInflater.from(activity).inflate(R.layout.custom_alert_dialog_rate_app,null)
+        val mDialogView = LayoutInflater.from(activity).inflate(R.layout.custom_alert_dialog_rate_app, null)
         val mBuilder = AlertDialog.Builder(activity).setView(mDialogView).setCancelable(false).show()
         val textFontLightx = Typeface.createFromAsset(activity!!.assets, "fonts/MontserratLight.ttf")
         mDialogView.txtRateApp.typeface = textFontLightx
         mDialogView.btnSendRate.setOnClickListener {
-            prefs.edit().putBoolean("rated",true).apply()
+            prefs.edit().putBoolean("rated", true).apply()
             mBuilder.dismiss()
             presenter.rateApp()
         }

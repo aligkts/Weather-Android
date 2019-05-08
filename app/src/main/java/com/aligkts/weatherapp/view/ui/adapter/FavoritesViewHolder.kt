@@ -79,7 +79,7 @@ class FavoritesViewHolder(viewGroup: ViewGroup) :
     override fun sendDownloadedBitmap(bitmap: Bitmap?) {
         bitmap?.let { _bitmap ->
             MemoryCache.instance?.let { _cache ->
-               _cache.getLru().put(iconCode,_bitmap)
+               _cache.getLru().put(iconCode, _bitmap)
                 imgBookmarkItem.setImageBitmap(_bitmap)
             }
         }

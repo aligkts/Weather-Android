@@ -37,7 +37,7 @@ class WeatherDetailFragment : Fragment(), DetailContract.View, IDownloadedImageB
         container?.let {
             it.hideKeyboard()
         }
-        presenter = DetailPresenter(activity!!.applicationContext,this)
+        presenter = DetailPresenter(activity!!.applicationContext, this)
         return view
     }
 
@@ -47,7 +47,7 @@ class WeatherDetailFragment : Fragment(), DetailContract.View, IDownloadedImageB
             layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
             adapter = mAdapter
         }
-        val currentCheck = arguments?.let {_bundle ->
+        val currentCheck = arguments?.let { _bundle ->
             _bundle.getString("bundle")
         }
         if (RUN_ONCE_DETAIL) {
@@ -84,7 +84,7 @@ class WeatherDetailFragment : Fragment(), DetailContract.View, IDownloadedImageB
             txtCurrentLocDetail.text = _name
         }
         main?.let { _main ->
-            _main.temp?.let {_temp ->
+            _main.temp?.let { _temp ->
                 when(prefs.getString("unitType", "Metric")) {
                     UnitType.Metric.toString() -> txtCurrentTempDetail.text = _temp.tempToCentigrade()
                     UnitType.Imperial.toString() -> txtCurrentTempDetail.text = _temp.tempToFahrenheit()

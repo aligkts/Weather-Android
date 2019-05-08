@@ -12,11 +12,11 @@ class MemoryCache private constructor() {
 
     var maxMemory = (Runtime.getRuntime().maxMemory() / 1024).toInt()
     var catchSize = maxMemory / 8
-    private var lru :LruCache<String, Bitmap> = LruCache(catchSize)
-    private val lruFavoritesList :LruCache<String,Array<ModelResponse?>> = LruCache(catchSize)
-    private val lruCurrentWeather :LruCache<String,ModelResponse> = LruCache(catchSize)
-    private val lruWeatherDetail :LruCache<String,ModelResponse> = LruCache(catchSize)
-    private val lruForecastDetail :LruCache<String,Array<ModelResponse?>> = LruCache(catchSize)
+    private var lru: LruCache<String, Bitmap> = LruCache(catchSize)
+    private val lruFavoritesList: LruCache<String, Array<ModelResponse?>> = LruCache(catchSize)
+    private val lruCurrentWeather: LruCache<String, ModelResponse> = LruCache(catchSize)
+    private val lruWeatherDetail: LruCache<String, ModelResponse> = LruCache(catchSize)
+    private val lruForecastDetail: LruCache<String, Array<ModelResponse?>> = LruCache(catchSize)
 
     companion object {
         private var uniqInstance: MemoryCache? = null
@@ -36,19 +36,19 @@ class MemoryCache private constructor() {
         return this.lru
     }
 
-    fun getLruFavoritesList(): LruCache<String,Array<ModelResponse?>> {
+    fun getLruFavoritesList(): LruCache<String, Array<ModelResponse?>> {
         return this.lruFavoritesList
     }
 
-    fun getLruCurrentWeather(): LruCache<String,ModelResponse> {
+    fun getLruCurrentWeather(): LruCache<String, ModelResponse> {
         return this.lruCurrentWeather
     }
 
-    fun getLruWeatherDetail(): LruCache<String,ModelResponse> {
+    fun getLruWeatherDetail(): LruCache<String, ModelResponse> {
         return this.lruWeatherDetail
     }
 
-    fun getLruForecastDetail(): LruCache<String,Array<ModelResponse?>> {
+    fun getLruForecastDetail(): LruCache<String, Array<ModelResponse?>> {
         return this.lruForecastDetail
     }
 

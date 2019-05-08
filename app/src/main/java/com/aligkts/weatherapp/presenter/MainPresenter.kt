@@ -35,16 +35,16 @@ class MainPresenter(private var context: Context,
     private val proxy by lazy { Proxy() }
     private val dataListFavoritesFromRequest = ArrayList<ModelResponse>()
     private val prefs by lazy { PreferenceManager.getDefaultSharedPreferences(context) }
-    private val language by lazy { prefs.getString("language","en") }
+    private val language by lazy { prefs.getString("language", "en") }
     lateinit var currentUnitType: String
     private val cache by lazy { MemoryCache.instance }
 
     override fun getDeviceLanguage() {
         val lang = Locale.getDefault().language
         if (lang == "tr") {
-            prefs.edit().putString("language",lang).apply()
+            prefs.edit().putString("language", lang).apply()
         } else {
-            prefs.edit().putString("language","en").apply()
+            prefs.edit().putString("language", "en").apply()
         }
     }
 

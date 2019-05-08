@@ -6,10 +6,24 @@ import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
 import com.aligkts.weatherapp.data.network.model.ModelResponse
 import com.aligkts.weatherapp.data.INotifyRecycler
+import java.lang.IllegalArgumentException
 
-class FavoritesAdapter(var itemList: List<ModelResponse>, private var listener: INotifyRecycler) : RecyclerView.Adapter<FavoritesViewHolder>(), Filterable  {
+class FavoritesAdapter(private var itemList: List<ModelResponse>,
+                       private var listener: INotifyRecycler) : RecyclerView.Adapter<FavoritesViewHolder>(), Filterable  {
 
     lateinit var dataListUnFilter: ArrayList<ModelResponse>
+
+    init {
+        setHasStableIds(true)
+    }
+
+    @Throws(IllegalArgumentException::class)
+    override fun setHasStableIds(hasStableIds: Boolean) {
+        if (!hasStableIds) {
+            throw IllegalArgumentException("StableListItemAdapter does not allow unstable ids")
+        }
+        super.setHasStableIds(hasStableIds)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavoritesViewHolder {
         return FavoritesViewHolder(parent)
@@ -22,6 +36,10 @@ class FavoritesAdapter(var itemList: List<ModelResponse>, private var listener: 
     override fun onBindViewHolder(holder: FavoritesViewHolder, position: Int) {
         holder.bindTo(holder.itemView.context, itemList[position], listener)
         holder.itemView.isLongClickable = true
+    }
+
+    override fun getItemId(position: Int): Long {
+        return itemList[position].id.hashCode().toLong()
     }
 
     fun setNewList(itemList: List<ModelResponse>) {
@@ -60,4 +78,5 @@ class FavoritesAdapter(var itemList: List<ModelResponse>, private var listener: 
             }
         }
     }
+
 }

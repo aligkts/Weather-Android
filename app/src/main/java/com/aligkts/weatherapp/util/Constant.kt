@@ -7,7 +7,8 @@ class Constant {
         const val baseUrl = "https://api.openweathermap.org/data/2.5/"
         const val API_IMAGE_BASE_URL = "http://openweathermap.org/img/w/"
         const val API_FORECAST_BASE_URL = "http://api.openweathermap.org/data/2.5/forecast?"
-        var RUN_ONCE = true
+        var RUN_ONCE_MAIN = true
+        var RUN_ONCE_DETAIL = true
     }
 
 }

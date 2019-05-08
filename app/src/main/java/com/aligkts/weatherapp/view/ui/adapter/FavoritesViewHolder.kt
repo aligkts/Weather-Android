@@ -3,6 +3,7 @@ package com.aligkts.weatherapp.view.ui.adapter
 import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Bitmap
+import android.os.Bundle
 import android.preference.PreferenceManager
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -69,7 +70,9 @@ class FavoritesViewHolder(viewGroup: ViewGroup) :
         }
         itemView.setOnClickListener {
             SingletonModel.instance?.setOtherList(model)
-            Navigation.findNavController(it).navigate(R.id.weatherDetailFragment)
+            val bundle = Bundle()
+            bundle.putString("bundle", model.name)
+            Navigation.findNavController(it).navigate(R.id.weatherDetailFragment,bundle)
         }
     }
 

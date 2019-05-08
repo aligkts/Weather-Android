@@ -22,12 +22,13 @@ interface MainContract {
     interface Presenter {
         fun getCurrentLocationCoordFromUser()
         fun navigateToWeatherDetail()
-        fun getBookmarkListFromDb()
+        fun setBookmarkListFromRequest()
         fun getLatLngResponse(latLng: LatLng)
         fun rateApp()
         fun getDeviceLanguage()
-        fun setCurrentWeatherFromCache()
+        fun setUiFromCache()
         fun putCurrentWeatherToCache(currentModel: ModelResponse)
+        fun putFavoritesListToCache(list: ArrayList<ModelResponse>)
     }
 
 }

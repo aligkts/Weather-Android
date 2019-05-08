@@ -20,6 +20,7 @@ import com.aligkts.weatherapp.data.network.model.ModelResponse
 import com.aligkts.weatherapp.presenter.DetailContract
 import com.aligkts.weatherapp.presenter.DetailPresenter
 import com.aligkts.weatherapp.util.*
+import com.aligkts.weatherapp.util.Constant.Companion.RUN_ONCE_DETAIL
 import com.aligkts.weatherapp.view.ui.adapter.DetailAdapter
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.android.synthetic.main.fragment_weather_detail.*
@@ -42,8 +43,19 @@ class WeatherDetailFragment : Fragment(), DetailContract.View, IDownloadedImageB
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val currentCheck = arguments?.let {
-            it.getString("bundle")
+        recyclerDetail.apply {
+            layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
+            adapter = mAdapter
+        }
+        val currentCheck = arguments?.let {_bundle ->
+            _bundle.getString("bundle")
+        }
+        if (RUN_ONCE_DETAIL) {
+            RUN_ONCE_DETAIL = false
+        } else {
+            currentCheck?.let {
+                presenter.setUiFromCache(it)
+            }
         }
         presenter.getSingletonData(currentCheck)?.let {
             dataList = it
@@ -62,7 +74,7 @@ class WeatherDetailFragment : Fragment(), DetailContract.View, IDownloadedImageB
         }
     }
 
-    private fun setDetailHeaderComponents(name: String?,
+    override fun setDetailHeaderComponents(name: String?,
                                           main: Main?,
                                           clouds: Clouds?,
                                           wind: Wind?,
@@ -98,20 +110,21 @@ class WeatherDetailFragment : Fragment(), DetailContract.View, IDownloadedImageB
 
     override fun sendDownloadedBitmap(bitmap: Bitmap?) {
         bitmap?.let { _bitmap ->
-            imgWeatherIconDetail.setImageBitmap(_bitmap)
+            imgWeatherIconDetail?.let {
+                it.setImageBitmap(_bitmap)
+            }
         }
     }
 
     override fun getForecastModelResponse(list: ArrayList<ModelResponse>) {
-        setRecyclerAdapter(list,recyclerDetail)
+        recyclerDetail?.let {
+            setRecyclerAdapter(list)
+        }
     }
 
-    private fun setRecyclerAdapter(list: ArrayList<ModelResponse>, recyclerView: RecyclerView) {
-        recyclerView.apply {
-            layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
-            adapter = mAdapter
-            mAdapter.setNewList(list)
-        }
+    private fun setRecyclerAdapter(list: ArrayList<ModelResponse>) {
+        presenter.putForecastListToCache(list)
+        mAdapter.setNewList(list)
     }
 
 }

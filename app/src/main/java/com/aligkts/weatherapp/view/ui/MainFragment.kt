@@ -30,39 +30,52 @@ import com.aligkts.weatherapp.presenter.MainPresenter
 import com.aligkts.weatherapp.util.*
 import com.aligkts.weatherapp.view.ui.adapter.FavoritesAdapter
 import com.aligkts.weatherapp.util.Constant.Companion.API_IMAGE_BASE_URL
+import com.aligkts.weatherapp.util.Constant.Companion.RUN_ONCE_MAIN
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.android.synthetic.main.custom_alert_dialog_rate_app.view.*
 import kotlinx.android.synthetic.main.fragment_main.*
+import kotlin.collections.ArrayList
+
 
 class MainFragment : Fragment(), INotifyRecycler, MainContract.View, IDownloadedImageBitmap {
 
     private val LOCATION_REQUEST_CODE = 101
     private var permissions = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
     private var dataListFavoritesFromRequest = ArrayList<ModelResponse>()
-    private var mAdapter = FavoritesAdapter(ArrayList(), this)
+    private val mAdapter by lazy { FavoritesAdapter(ArrayList(),this) }
     private lateinit var presenter: MainPresenter
-    private var searchText= ""
+    private var searchText = ""
     private val prefs by lazy { PreferenceManager.getDefaultSharedPreferences(activity) }
     private val appRated by lazy { prefs.getBoolean("rated", false) }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val view = inflater.inflate(R.layout.fragment_main, container, false)
         presenter = MainPresenter(activity!!.applicationContext, this)
         presenter.getDeviceLanguage()
         dataListFavoritesFromRequest.clear()
-        presenter.getBookmarkListFromDb()
-        return inflater.inflate(R.layout.fragment_main, container, false)
+        presenter.setBookmarkListFromRequest()
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        recyclerFavorites.apply {
+            layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
+            adapter = mAdapter
+        }
+        if (RUN_ONCE_MAIN) {
+            RUN_ONCE_MAIN = false
+        } else {
+            progressLoading.visibility = View.GONE
+            presenter.setUiFromCache()
+        }
         searchView.post {
-            searchView.setQuery("",false)
+            searchView.setQuery("", false)
         }
         if (ContextCompat.checkSelfPermission(activity!!,
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(permissions, LOCATION_REQUEST_CODE)
         } else {
-            // Permission has already been granted
             presenter.getCurrentLocationCoordFromUser()
             if (!appRated) {
                 showRateDialog()
@@ -119,11 +132,9 @@ class MainFragment : Fragment(), INotifyRecycler, MainContract.View, IDownloaded
     }
 
     private fun setRecyclerAdapter(list: ArrayList<ModelResponse>) {
-        recyclerFavorites.apply {
-            layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
-            adapter = mAdapter
-            mAdapter.setNewList(list)
-        }
+        val sortedList = list.sortedWith(compareBy { it.name }).toMutableList()
+        presenter.putFavoritesListToCache(sortedList as ArrayList<ModelResponse>)
+        mAdapter.setNewList(sortedList)
     }
 
     override fun itemRemoved(id: Int) {
@@ -133,27 +144,33 @@ class MainFragment : Fragment(), INotifyRecycler, MainContract.View, IDownloaded
                 break
             }
         }
-        mAdapter.setNewList(dataListFavoritesFromRequest)
+        val sortedList = dataListFavoritesFromRequest.sortedWith(compareBy { it.name }).toMutableList()
+        mAdapter.setNewList(sortedList)
+        presenter.putFavoritesListToCache(sortedList as ArrayList<ModelResponse>)
         mAdapter.filter.filter(searchText)
-        mAdapter.notifyDataSetChanged()
     }
 
     override fun getCurrentParsedModel(modelResponse: ModelResponse) {
         setCurrentUiComponents(modelResponse)
+        SingletonModel.instance?.let { _singleton ->
+            _singleton.setCurrentList(modelResponse)
+        }
+        presenter.putCurrentWeatherToCache(modelResponse)
     }
 
     private fun setCurrentUiComponents(response: ModelResponse) {
-        SingletonModel.instance?.let { _singleton ->
-            _singleton.setCurrentList(response)
-        }
         val location = response.name
-        txtCurrentLocation.text = location
+        txtCurrentLocation?.let {
+            it.text = location
+        }
         response.main?.let { _main ->
             val temp = _main.temp
             temp?.let { _temp ->
-                when(prefs.getString("unitType", "Metric")) {
-                    UnitType.Metric.toString() -> txtCurrentTemp.text = _temp.tempToCentigrade()
-                    UnitType.Imperial.toString() -> txtCurrentTemp.text = _temp.tempToFahrenheit()
+                txtCurrentTemp?.let {
+                    when(prefs.getString("unitType", "Metric")) {
+                        UnitType.Metric.toString() -> it.text = _temp.tempToCentigrade()
+                        UnitType.Imperial.toString() -> it.text = _temp.tempToFahrenheit()
+                    }
                 }
             }
         }
@@ -163,23 +180,29 @@ class MainFragment : Fragment(), INotifyRecycler, MainContract.View, IDownloaded
                 DownloadImage(this).execute(url)
             }
         }
-        weatherPanel.visibility = View.VISIBLE
-        progressLoading.visibility = View.GONE
+        weatherPanel?.let {
+            it.visibility = View.VISIBLE
+        }
+        progressLoading?.let {
+            it.visibility = View.GONE
+        }
     }
 
     override fun sendDownloadedBitmap(bitmap: Bitmap?) {
-        bitmap?.let {_bitmap ->
-            imgWeatherIcon.setImageBitmap(_bitmap)
+        bitmap?.let { _bitmap ->
+            imgWeatherIcon?.let {
+                it.setImageBitmap(_bitmap)
+            }
         }
     }
 
     private fun showRateDialog() {
-        val mDialogView = LayoutInflater.from(activity).inflate(R.layout.custom_alert_dialog_rate_app,null)
+        val mDialogView = LayoutInflater.from(activity).inflate(R.layout.custom_alert_dialog_rate_app, null)
         val mBuilder = AlertDialog.Builder(activity).setView(mDialogView).setCancelable(false).show()
         val textFontLightx = Typeface.createFromAsset(activity!!.assets, "fonts/MontserratLight.ttf")
         mDialogView.txtRateApp.typeface = textFontLightx
         mDialogView.btnSendRate.setOnClickListener {
-            prefs.edit().putBoolean("rated",true).apply()
+            prefs.edit().putBoolean("rated", true).apply()
             mBuilder.dismiss()
             presenter.rateApp()
         }
@@ -218,6 +241,7 @@ class MainFragment : Fragment(), INotifyRecycler, MainContract.View, IDownloaded
             }
         }
     }
+
 }
 
 

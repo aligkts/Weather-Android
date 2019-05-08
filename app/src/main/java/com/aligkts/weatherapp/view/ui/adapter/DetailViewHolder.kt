@@ -33,7 +33,7 @@ class DetailViewHolder(viewGroup: ViewGroup) :
             txtItemTitle.text = _datetime.dateDoDay()
         }
         model.main?.let { _main ->
-            _main.temp?.let {_temp ->
+            _main.temp?.let { _temp ->
                 when(prefs.getString("unitType", "Metric")) {
                     UnitType.Metric.toString() -> txtItemTemp.text = _temp.tempToCentigrade()
                     UnitType.Imperial.toString() -> txtItemTemp.text = _temp.tempToFahrenheit()
@@ -41,7 +41,7 @@ class DetailViewHolder(viewGroup: ViewGroup) :
             }
         }
         model.weather?.let { _list ->
-            _list.first()?.let {_index ->
+            _list.first()?.let { _index ->
                 iconCode = _index.icon.toString()
                 val url = API_IMAGE_BASE_URL.plus(iconCode).plus(context.getString(R.string.imageType))
                 MemoryCache.instance?.let { _cache ->
@@ -59,7 +59,7 @@ class DetailViewHolder(viewGroup: ViewGroup) :
     override fun sendDownloadedBitmap(bitmap: Bitmap?) {
         bitmap?.let { _bitmap ->
             MemoryCache.instance?.let { _cache ->
-                _cache.getLru().put(iconCode,_bitmap)
+                _cache.getLru().put(iconCode, _bitmap)
                 imgBookmarkItem.setImageBitmap(_bitmap)
             }
         }

@@ -19,9 +19,12 @@ fun View.hideKeyboard() {
     inputMethodManager.hideSoftInputFromWindow(windowToken, 0)
 }
 
-fun Double.tempFormatter(): String {
-    val centigrade = (this.toInt().minus(32)).div(1.8000)
-    return Math.round(centigrade).toString() + 0x00B0.toChar()
+fun Double.tempToCentigrade(): String {
+    return Math.round(this).toString() + 0x00B0.toChar()
+}
+
+fun Double.tempToFahrenheit(): String {
+    return Math.round(this).toString() + " \u2109"
 }
 
 infix fun String.toast(context: Context) {
@@ -32,6 +35,12 @@ infix fun String.toast(context: Context) {
 fun String.dateDoDay(): String {
     val inFormat = SimpleDateFormat("yyy-MM-dd")
     val date = inFormat.parse(this)
-    val outFormat = SimpleDateFormat("EEEE")
-    return outFormat.format(date)
+    val lang = Locale.getDefault().language
+    return if (lang == "tr") {
+        val outFormat = SimpleDateFormat("EEEE")
+        outFormat.format(date)
+    } else {
+        val outFormat = SimpleDateFormat("EEEE", Locale.US)
+        outFormat.format(date)
+    }
 }

@@ -62,8 +62,7 @@ class DBConnectionManager(val context: Context) :
         }
         result.close()
         sqliteDB.close()
-        val sortedList = locationList.sortedWith(compareByDescending { it.date })
-        return sortedList
+        return locationList
     }
 
     fun deleteClickedItem(position: Int) {

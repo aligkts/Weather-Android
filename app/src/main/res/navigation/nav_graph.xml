@@ -11,14 +11,19 @@
         android:label="fragment_main"
         tools:layout="@layout/fragment_main">
         <action
-            android:id="@+id/action_main_to_detail"
-            app:destination="@id/weatherDetailFragment" />
+                android:id="@+id/action_main_to_detail"
+                app:destination="@id/weatherDetailFragment"/>
         <action
-            android:id="@+id/action_main_to_add_location"
-            app:destination="@id/addLocationFragment" />
+                android:id="@+id/action_main_to_add_location"
+                app:destination="@id/addLocationFragment" app:enterAnim="@anim/fade_in"/>
         <action
             android:id="@+id/action_main_to_viewpager"
-            app:destination="@id/viewPagerFragment" />
+            app:destination="@+id/viewPagerFragment"
+            app:enterAnim="@anim/popup_show"
+            app:popExitAnim="@anim/popup_hide" />
+        <action
+                android:id="@+id/action_main_to_settings"
+                app:destination="@id/settingsFragment" app:enterAnim="@anim/bounce"/>
     </fragment>
     <fragment
         android:id="@+id/weatherDetailFragment"
@@ -35,4 +40,9 @@
         android:name="com.aligkts.weatherapp.view.ui.viewpager.ViewPagerFragment"
         android:label="fragment_view_pager"
         tools:layout="@layout/fragment_view_pager" />
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.aligkts.weatherapp.view.ui.SettingsFragment"
+        android:label="fragment_settings"
+        tools:layout="@layout/fragment_settings" />
 </navigation>
